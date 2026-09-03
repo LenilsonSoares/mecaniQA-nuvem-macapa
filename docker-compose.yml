@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mecaniqa-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: senha_segura_aqui
+      MYSQL_DATABASE: mecaniqa_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_dados:/var/lib/mysql
+
+  cache:
+    image: redis:alpine
+    container_name: mecaniqa-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dados:/data
+
+  api:
+    build: .
+    container_name: mecaniqa-java-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - cache
+    environment:
+      # Aqui a mágica do DNS interno acontece! O host é o nome do serviço (db e cache).
+      - DB_HOST=db
+      - DB_PORT=3306
+      - REDIS_HOST=cache
+
+# Declaração obrigatória para a persistência física dos dados
+volumes:
+  mysql_dados:
+  redis_dados:
