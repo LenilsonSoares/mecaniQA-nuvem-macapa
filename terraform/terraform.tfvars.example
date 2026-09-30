@@ -1,0 +1,6 @@
+kubeconfig_path = "~/.kube/config"
+kube_context    = "docker-desktop"
+api_image       = "mecaniqa-api:1.1"
+
+# Não grave a senha real neste arquivo versionado.
+# Prefira: $env:TF_VAR_mysql_root_password = "sua-senha"

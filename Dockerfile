@@ -6,7 +6,7 @@ COPY src ./src
 
 RUN mkdir out \
     && javac --release 17 -encoding UTF-8 \
-        -d out src/br/com/mecaniqa/Application.java \
+        -d out $(find src -name '*.java') \
     && jar --create --file app.jar \
         --main-class br.com.mecaniqa.Application \
         -C out .

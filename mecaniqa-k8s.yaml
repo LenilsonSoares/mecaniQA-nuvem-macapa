@@ -26,6 +26,8 @@ metadata:
   namespace: mecaniqa
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mysql
@@ -42,12 +44,20 @@ spec:
               name: mysql
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "senha_segura_aqui"
+              valueFrom:
+                secretKeyRef:
+                  name: mecaniqa-secrets
+                  key: mysql-root-password
             - name: MYSQL_DATABASE
               value: "mecaniqa_db"
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
+          startupProbe:
+            tcpSocket:
+              port: 3306
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             tcpSocket:
               port: 3306
@@ -58,6 +68,13 @@ spec:
               port: 3306
             initialDelaySeconds: 20
             periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
@@ -97,6 +114,8 @@ metadata:
   namespace: mecaniqa
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: redis
@@ -114,6 +133,11 @@ spec:
           volumeMounts:
             - name: redis-storage
               mountPath: /data
+          startupProbe:
+            tcpSocket:
+              port: 6379
+            periodSeconds: 5
+            failureThreshold: 12
           readinessProbe:
             tcpSocket:
               port: 6379
@@ -124,6 +148,13 @@ spec:
               port: 6379
             initialDelaySeconds: 15
             periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
       volumes:
         - name: redis-storage
           persistentVolumeClaim:
@@ -162,7 +193,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: mecaniqa-api:1.0
+          image: mecaniqa-api:1.1
           imagePullPolicy: IfNotPresent
           env:
             - name: PORT
@@ -178,6 +209,12 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 12
           readinessProbe:
             httpGet:
               path: /health
@@ -190,6 +227,13 @@ spec:
               port: 8080
             initialDelaySeconds: 20
             periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service

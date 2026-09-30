@@ -6,3 +6,7 @@ README.md
 out
 *.class
 *.jar
+.env
+.terraform
+*.tfstate*
+terraform

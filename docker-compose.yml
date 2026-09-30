@@ -1,43 +1,78 @@
-version: '3.8'
-
 services:
   db:
-    image: mysql:8.0
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    image: mecaniqa-mysql:8.0
     container_name: mecaniqa-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: senha_segura_aqui
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Defina MYSQL_ROOT_PASSWORD no arquivo .env}
       MYSQL_DATABASE: mecaniqa_db
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - mysql_dados:/var/lib/mysql
+    networks:
+      - mecaniqa-net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   cache:
-    image: redis:alpine
+    build:
+      context: .
+      dockerfile: docker/redis/Dockerfile
+    image: mecaniqa-redis:alpine
     container_name: mecaniqa-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_dados:/data
+    networks:
+      - mecaniqa-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mecaniqa-api:1.1
     container_name: mecaniqa-java-api
     restart: unless-stopped
     ports:
       - "8080:8080"
     depends_on:
-      - db
-      - cache
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
     environment:
-      # Aqui a mágica do DNS interno acontece! O host é o nome do serviço (db e cache).
-      - DB_HOST=db
-      - DB_PORT=3306
-      - REDIS_HOST=cache
+      DB_HOST: db
+      DB_PORT: "3306"
+      REDIS_HOST: cache
+      REDIS_PORT: "6379"
+    networks:
+      - mecaniqa-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
-# Declaração obrigatória para a persistência física dos dados
 volumes:
   mysql_dados:
   redis_dados:
+
+networks:
+  mecaniqa-net:
+    driver: bridge
