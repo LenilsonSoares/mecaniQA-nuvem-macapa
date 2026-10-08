@@ -38,8 +38,6 @@ kubectl --context docker-desktop get storageclass
 .\scripts\check-oat2.ps1
 .\scripts\start-oat2.ps1
 .\scripts\test-oat2.ps1
-# Opcional: recuperação, persistência e descoberta com duas réplicas temporárias.
-.\scripts\test-oat2-recovery.ps1
 ```
 
 `check-oat2` constrói um ambiente descartável, executa lint, formatação, testes e
@@ -50,6 +48,18 @@ O manifesto aplicado é salvo junto das evidências. `test-oat2` abre túneis te
 e fecha apenas os túneis que iniciou. O teste acrescenta uma leitura válida e uma
 inválida ao histórico sintético. As evidências ficam em `out/oat2-2026-10-07/`.
 
+O teste de recuperação é opcional e reinicia os Pods. Execute-o antes de abrir
+os túneis da demonstração, quando precisar verificar persistência e descoberta
+com duas réplicas temporárias:
+
+```powershell
+.\scripts\test-oat2-recovery.ps1
+```
+
+Para recuperar apenas o acesso pelo navegador, reabra o port-forward. Executar
+novamente o teste de recuperação não é necessário para esse acesso e pode
+interromper os túneis que já estavam ativos.
+
 Em clusters que não compartilham as imagens locais do Docker Desktop, carregar
 `mecaniqa-iot:2.0` no runtime ou publicá-la em um registry acessível e ajustar o
 manifesto antes de executar o script. Erro `ImagePullBackOff` deve ser investigado
@@ -57,13 +67,26 @@ com `kubectl describe pod`, não resolvido removendo dados do cluster.
 
 ## 2. Mostrar o funcionamento ao professor
 
-Em um terminal, confira os recursos:
+Use três terminais. Os dois primeiros ficam ocupados com os túneis; faça as
+requisições no terceiro. Os testes automatizados fecham seus próprios túneis ao
+terminar e não deixam as portas 8000/9090 abertas para esta demonstração.
+
+Se os endereços já estiverem acessíveis por túneis ativos, use essa conexão.
+Abrir outro port-forward na mesma porta causará um erro de porta ocupada.
+
+Execute o teste de recuperação antes de abrir os túneis: ele substitui Pods e
+pode interromper um port-forward que já estava em execução. Se isso acontecer,
+execute novamente o comando de port-forward correspondente.
+
+**Terminal 1 — Prometheus:** confira os recursos e abra o túnel.
 
 ```powershell
 kubectl --context docker-desktop get pods,svc,pvc -n mecaniqa
 kubectl --context docker-desktop logs deployment/mecaniqa-iot -n mecaniqa --tail=15
 kubectl --context docker-desktop port-forward -n mecaniqa svc/prometheus 9090:9090 --address=127.0.0.1
 ```
+
+Deixe esse terminal aberto. Aguarde a mensagem `Forwarding from 127.0.0.1:9090`.
 
 Abra `http://127.0.0.1:9090/targets`: o job `mecaniqa-iot` deve estar UP.
 Na tela de consulta, execute:
@@ -72,13 +95,15 @@ Na tela de consulta, execute:
 sum by (result) (mecaniqa_iot_readings_total)
 ```
 
-Em outro terminal:
+**Terminal 2 — simulador IoT:**
 
 ```powershell
 kubectl --context docker-desktop port-forward -n mecaniqa svc/mecaniqa-iot 8000:8000 --address=127.0.0.1
 ```
 
-Em um terceiro terminal, faça as leituras:
+Deixe esse terminal aberto. Aguarde a mensagem `Forwarding from 127.0.0.1:8000`.
+
+**Terminal 3 — requisições:** faça as leituras.
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/health
@@ -90,6 +115,11 @@ Invoke-RestMethod http://127.0.0.1:8000/readings -Method Post -ContentType appli
 Espere pelo próximo scrape (intervalo de 10 segundos) e confira os contadores no
 Prometheus. Para encerrar o acesso pelo navegador, pressione Ctrl+C nos terminais
 de port-forward. Isso não apaga os Pods nem o histórico do PVC.
+
+`422` na leitura negativa é o resultado esperado da validação. Já “conexão
+recusada” significa que o acesso local não está disponível: verifique se o túnel
+da porta 8000 continua ativo. Nos logs, “Leitura sintética rejeitada” também é
+esperado, pois a geração usa probabilidade de erro de 10% para o exercício.
 
 ## 3. Explicar a arquitetura
 

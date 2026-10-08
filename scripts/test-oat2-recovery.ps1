@@ -60,4 +60,5 @@ try {
     if ($tunnel -and -not $tunnel.HasExited) { Stop-Process -Id $tunnel.Id -ErrorAction SilentlyContinue }
     kubectl --context $Context scale deployment/mecaniqa-iot -n mecaniqa --replicas=$originalReplicas
     if ($LASTEXITCODE -ne 0) { Write-Warning 'Restaure manualmente a quantidade original de réplicas.' }
+    Write-Host 'Este teste substituiu Pods. Para demonstrar pelo navegador, reabra os port-forwards nas portas 8000 e 9090 conforme o guia do piloto.'
 }
