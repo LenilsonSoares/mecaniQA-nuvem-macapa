@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mecaniqa-iot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mecaniqa-iot
+  template:
+    metadata:
+      labels:
+        app: mecaniqa-iot
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: simulator
+          image: mecaniqa-iot:2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 8000
+          env:
+            - name: SIMULATION_INTERVAL_SECONDS
+              value: "1"
+            - name: SIMULATION_ERROR_RATE
+              value: "0.1"
+            - name: SIMULATION_SEED
+              value: "42"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: metrics
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: metrics
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: metrics
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mecaniqa-iot
+spec:
+  selector:
+    app: mecaniqa-iot
+  ports:
+    - name: metrics
+      port: 8000
+      targetPort: metrics

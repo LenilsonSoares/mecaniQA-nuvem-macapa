@@ -4,6 +4,12 @@ out/
 *.class
 *.jar
 
+# Ambiente e caches Python do simulador IoT
+iot/.venv/
+iot/.ruff_cache/
+__pycache__/
+*.py[cod]
+
 # Credenciais locais
 .env
 *.tfvars

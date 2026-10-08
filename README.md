@@ -163,7 +163,7 @@ terraform destroy
 ## Endpoints e portas
 
 | Componente | Porta | Acesso |
-|---|---:|---|
+| --- | ---: | --- |
 | API Java | 8080 | localhost no Compose; port-forward no Docker Desktop; NodePort 30080 no Minikube |
 | MySQL | 3306 | publicado no Compose; interno no Kubernetes |
 | Redis | 6379 | publicado no Compose; interno no Kubernetes |
@@ -197,6 +197,23 @@ Com a stack do Compose em execução, rode:
 
 O script verifica os endpoints principais, a resposta `404` para rotas inexistentes e `405` para métodos HTTP não permitidos.
 
-## Entrega
+## OAT 2 — Monitorando a Continuidade
+
+A sessão de **07/10/2026** acrescenta o simulador Python instrumentado e Prometheus
+ao Kubernetes. Consulte o [roteiro completo do piloto](docs/oat2/guia-piloto-07-10.md),
+o [board e registro da sessão](docs/oat2/registro-sessao-07-10.md) e a
+[validação local](docs/oat2/validacao-07-10.md).
+
+```powershell
+.\scripts\check-oat2.ps1
+.\scripts\start-oat2.ps1
+.\scripts\test-oat2.ps1
+```
+
+Os recursos ficam em `iot/` e `k8s/oat2/`; o ambiente alternativo de desenvolvimento
+usa `docker-compose.oat2.yml`. Grafana, alertas, HPA e continuidade são entregas das
+próximas sessões e estão detalhados no roteiro.
+
+## Entrega da OAT 1
 
 O arquivo `mecaniQA_oat1_macapa.pdf` deve permanecer na raiz do repositório, ser versionado na branch principal e também enviado ao formulário do Blackboard. Tempo máximo da apresentação: sete minutos.

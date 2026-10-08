@@ -48,6 +48,12 @@ public final class ApiServer {
     }
 
     private void handleHealth(HttpExchange exchange) throws IOException {
+        // HttpServer escolhe contextos por prefixo; a rota de saúde deve ser exata.
+        if (!"/health".equals(exchange.getRequestURI().getPath())) {
+            JsonResponses.send(exchange, 404, "{\"error\":\"not_found\"}");
+            return;
+        }
+
         if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
             JsonResponses.sendMethodNotAllowed(exchange);
             return;

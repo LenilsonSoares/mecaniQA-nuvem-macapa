@@ -1,0 +1,32 @@
+services:
+  iot-simulator:
+    image: mecaniqa-iot:2.0
+    build: ./iot
+    environment:
+      SIMULATION_INTERVAL_SECONDS: "1"
+      SIMULATION_ERROR_RATE: "0.1"
+      SIMULATION_SEED: "42"
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+      - --storage.tsdb.retention.size=1GB
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus-local.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_dados:/prometheus
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+volumes:
+  prometheus_dados:

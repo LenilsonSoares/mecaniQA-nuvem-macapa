@@ -1,0 +1,11 @@
+# Compose local possui uma réplica. No cluster, usar a descoberta de Pods.
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: mecaniqa-iot
+    static_configs:
+      - targets: ["iot-simulator:8000"]
