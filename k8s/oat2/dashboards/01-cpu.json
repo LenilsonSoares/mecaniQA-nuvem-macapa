@@ -1,0 +1,229 @@
+{
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "builtIn":  1,
+                                         "datasource":  {
+                                                            "type":  "grafana",
+                                                            "uid":  "-- Grafana --"
+                                                        },
+                                         "enable":  true,
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "type":  "dashboard"
+                                     }
+                                 ]
+                    },
+    "editable":  false,
+    "fiscalYearStartMonth":  0,
+    "graphTooltip":  1,
+    "id":  null,
+    "links":  [
+
+              ],
+    "liveNow":  false,
+    "panels":  [
+                   {
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "color":  {
+                                                                          "mode":  "palette-classic"
+                                                                      },
+                                                            "custom":  {
+                                                                           "axisBorderShow":  false,
+                                                                           "axisCenteredZero":  false,
+                                                                           "axisColorMode":  "text",
+                                                                           "axisLabel":  "",
+                                                                           "axisPlacement":  "auto",
+                                                                           "barAlignment":  0,
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  12,
+                                                                           "gradientMode":  "none",
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "lineWidth":  2,
+                                                                           "pointSize":  4,
+                                                                           "scaleDistribution":  {
+                                                                                                     "type":  "linear"
+                                                                                                 },
+                                                                           "showPoints":  "never",
+                                                                           "spanNulls":  false,
+                                                                           "stacking":  {
+                                                                                            "group":  "A",
+                                                                                            "mode":  "none"
+                                                                                        },
+                                                                           "thresholdsStyle":  {
+                                                                                                   "mode":  "off"
+                                                                                               }
+                                                                       },
+                                                            "mappings":  [
+
+                                                                         ],
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "value":  null,
+                                                                                                 "color":  "green"
+                                                                                             },
+                                                                                             {
+                                                                                                 "value":  75,
+                                                                                                 "color":  "yellow"
+                                                                                             },
+                                                                                             {
+                                                                                                 "value":  90,
+                                                                                                 "color":  "red"
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "unit":  "percent",
+                                                            "min":  0,
+                                                            "max":  100
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  24,
+                                       "x":  0,
+                                       "h":  10
+                                   },
+                       "id":  1,
+                       "options":  {
+                                       "legend":  {
+                                                      "calcs":  [
+
+                                                                ],
+                                                      "displayMode":  "list",
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true
+                                                  },
+                                       "tooltip":  {
+                                                       "hideZeros":  false,
+                                                       "mode":  "multi",
+                                                       "sort":  "desc"
+                                                   }
+                                   },
+                       "targets":  [
+                                       {
+                                           "datasource":  {
+                                                              "type":  "prometheus",
+                                                              "uid":  "prometheus"
+                                                          },
+                                           "editorMode":  "code",
+                                           "expr":  "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}[5m])) / clamp_min(sum by (pod) ((container_spec_cpu_quota{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\", container_spec_cpu_quota\u003e0} / container_spec_cpu_period{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"})), 0.001)",
+                                           "legendFormat":  "{{pod}}",
+                                           "range":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "title":  "CPU usada em relação ao limite",
+                       "description":  "Percentual do limite de CPU configurado para cada Pod, calculado pela taxa de uso dos containers nos últimos 5 minutos.",
+                       "type":  "timeseries"
+                   },
+                   {
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "mappings":  [
+
+                                                                         ],
+                                                            "min":  0,
+                                                            "thresholds":  {
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "value":  null,
+                                                                                                 "color":  "green"
+                                                                                             },
+                                                                                             {
+                                                                                                 "value":  75,
+                                                                                                 "color":  "yellow"
+                                                                                             },
+                                                                                             {
+                                                                                                 "value":  90,
+                                                                                                 "color":  "red"
+                                                                                             }
+                                                                                         ],
+                                                                               "mode":  "absolute"
+                                                                           },
+                                                            "unit":  "percent",
+                                                            "max":  100
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "gridPos":  {
+                                       "y":  10,
+                                       "w":  12,
+                                       "x":  0,
+                                       "h":  8
+                                   },
+                       "id":  2,
+                       "options":  {
+                                       "minVizHeight":  75,
+                                       "minVizWidth":  75,
+                                       "showThresholdLabels":  false,
+                                       "reduceOptions":  {
+                                                             "values":  false,
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ],
+                                                             "fields":  ""
+                                                         },
+                                       "showThresholdMarkers":  true,
+                                       "orientation":  "auto"
+                                   },
+                       "targets":  [
+                                       {
+                                           "expr":  "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}[5m])) / clamp_min(sum by (pod) ((container_spec_cpu_quota{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\", container_spec_cpu_quota\u003e0} / container_spec_cpu_period{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"})), 0.001)",
+                                           "editorMode":  "code",
+                                           "instant":  true,
+                                           "datasource":  {
+                                                              "type":  "prometheus",
+                                                              "uid":  "prometheus"
+                                                          },
+                                           "refId":  "A",
+                                           "legendFormat":  "{{pod}}",
+                                           "range":  false
+                                       }
+                                   ],
+                       "title":  "CPU usada em relação ao limite — agora",
+                       "description":  "Percentual do limite de CPU configurado para cada Pod, calculado pela taxa de uso dos containers nos últimos 5 minutos.",
+                       "type":  "gauge"
+                   }
+               ],
+    "refresh":  "30s",
+    "schemaVersion":  39,
+    "tags":  [
+                 "mecaniqa",
+                 "oat2",
+                 "cpu"
+             ],
+    "templating":  {
+                       "list":  [
+
+                                ]
+                   },
+    "time":  {
+                 "from":  "now-1h",
+                 "to":  "now"
+             },
+    "timepicker":  {
+
+                   },
+    "timezone":  "browser",
+    "title":  "MecaniQA — CPU dos Pods",
+    "uid":  "mecaniqa-iot-cpu",
+    "version":  1,
+    "weekStart":  ""
+}

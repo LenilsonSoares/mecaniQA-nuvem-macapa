@@ -5,7 +5,20 @@ resources:
   - namespace.yaml
   - iot.yaml
   - prometheus.yaml
+  - grafana.yaml
 configMapGenerator:
   - name: prometheus-config
     files:
       - prometheus.yml
+  - name: grafana-datasource
+    files:
+      - grafana-datasource.yaml
+  - name: grafana-dashboards-provider
+    files:
+      - grafana-dashboards-provider.yaml
+  - name: grafana-dashboards
+    files:
+      - dashboards/01-cpu.json
+      - dashboards/02-memoria.json
+      - dashboards/03-erros.json
+      - dashboards/04-sucessos.json

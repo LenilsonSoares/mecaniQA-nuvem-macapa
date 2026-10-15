@@ -200,9 +200,13 @@ O script verifica os endpoints principais, a resposta `404` para rotas inexisten
 ## OAT 2 — Monitorando a Continuidade
 
 A sessão de **07/10/2026** acrescenta o simulador Python instrumentado e Prometheus
-ao Kubernetes. Consulte o [roteiro completo do piloto](docs/oat2/guia-piloto-07-10.md),
-o [board e registro da sessão](docs/oat2/registro-sessao-07-10.md) e a
-[validação local](docs/oat2/validacao-07-10.md).
+ao Kubernetes. A sessão de **14/10/2026** acrescenta o Grafana e quatro dashboards:
+CPU e memória dos Pods, coletadas pelo Kubelet/cAdvisor, além de erros e sucessos
+das leituras da aplicação.
+Consulte o [roteiro do piloto](docs/oat2/guia-piloto-07-10.md), os [registros e
+decisões das sessões de 07/10](docs/oat2/registro-sessao-07-10.md) e
+[14/10](docs/oat2/registro-sessao-14-10.md), e a
+[validação local da etapa anterior](docs/oat2/validacao-07-10.md).
 
 ```powershell
 .\scripts\check-oat2.ps1
@@ -210,9 +214,13 @@ o [board e registro da sessão](docs/oat2/registro-sessao-07-10.md) e a
 .\scripts\test-oat2.ps1
 ```
 
-Os recursos ficam em `iot/` e `k8s/oat2/`; o ambiente alternativo de desenvolvimento
-usa `docker-compose.oat2.yml`. Grafana, alertas, HPA e continuidade são entregas das
-próximas sessões e estão detalhados no roteiro.
+Antes de iniciar a stack, crie no namespace `mecaniqa` o Secret `grafana-admin`
+com as chaves `admin-user` e `admin-password`; não versione a senha. O script
+aguarda os Deployments `mecaniqa-iot`, `prometheus` e `grafana`. Para abrir a UI,
+use `kubectl port-forward -n mecaniqa svc/grafana 3000:3000` e acesse
+`http://127.0.0.1:3000`. Os arquivos de provisionamento e dashboards ficam em
+`k8s/oat2/`; o ambiente alternativo de desenvolvimento usa `docker-compose.oat2.yml`.
+Alertas, HPA, teste de estresse e continuidade permanecem como entregas posteriores.
 
 ## Entrega da OAT 1
 
