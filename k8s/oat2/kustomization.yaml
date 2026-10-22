@@ -4,6 +4,7 @@ namespace: mecaniqa
 resources:
   - namespace.yaml
   - iot.yaml
+  - hpa.yaml
   - prometheus.yaml
   - grafana.yaml
 configMapGenerator:
@@ -22,3 +23,6 @@ configMapGenerator:
       - dashboards/02-memoria.json
       - dashboards/03-erros.json
       - dashboards/04-sucessos.json
+  - name: grafana-alerting
+    files:
+      - grafana-alerting.yaml

@@ -1,0 +1,213 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: mecaniqa-alert-channel
+    receivers:
+      - uid: mecaniqa-default-receiver
+        type: email
+        settings:
+          addresses: equipe-macapa@mecaniqa.local
+
+policies:
+  - orgId: 1
+    receiver: mecaniqa-alert-channel
+    group_by: ['alertname', 'namespace']
+
+groups:
+  - orgId: 1
+    name: mecaniqa-alert-rules
+    folder: MecaniQA
+    interval: 10s
+    rules:
+      - uid: mecaniqa-cpu-high
+        title: "Alerta 1: CPU do Simulador IoT > 75% da Request"
+        condition: B
+        for: 30s
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            queryType: ""
+            relativeTimeRange:
+              from: 60
+              to: 0
+            model:
+              editorMode: code
+              expr: sum(rate(container_cpu_usage_seconds_total{namespace="mecaniqa",container="simulator"}[1m]))
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0.075]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    params: []
+                    type: last
+                  type: threshold
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: critical
+          alertname: CPUAltaSimulador
+          team: macapa
+        annotations:
+          summary: "Uso de CPU do simulador IoT ultrapassou 75% da request (0.075 cores)."
+
+      - uid: mecaniqa-memoria-high
+        title: "Alerta 2: Memória do Simulador IoT > 80% do Limite"
+        condition: B
+        for: 30s
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            queryType: ""
+            relativeTimeRange:
+              from: 60
+              to: 0
+            model:
+              editorMode: code
+              expr: sum(container_memory_working_set_bytes{namespace="mecaniqa",container="simulator"})
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [104857600]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    params: []
+                    type: last
+                  type: threshold
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          alertname: MemoriaAltaSimulador
+          team: macapa
+        annotations:
+          summary: "Consumo de memória do simulador IoT ultrapassou 80% do limite (104.8 MB)."
+
+      - uid: mecaniqa-erros-ingestao
+        title: "Alerta 3: Taxa de Erros de Ingestão > 5 erros/min"
+        condition: B
+        for: 30s
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            queryType: ""
+            relativeTimeRange:
+              from: 60
+              to: 0
+            model:
+              editorMode: code
+              expr: sum(rate(mecaniqa_iot_readings_total{result="error"}[1m])) * 60
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [5]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    params: []
+                    type: last
+                  type: threshold
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: critical
+          alertname: TaxaErrosElevada
+          team: macapa
+        annotations:
+          summary: "Taxa de leituras IoT rejeitadas excedeu 5 erros por minuto durante o teste."
+
+      - uid: mecaniqa-sucessos-volume
+        title: "Alerta 4: Taxa de Sucessos / Volume > 50 req/min"
+        condition: B
+        for: 30s
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            queryType: ""
+            relativeTimeRange:
+              from: 60
+              to: 0
+            model:
+              editorMode: code
+              expr: sum(rate(mecaniqa_iot_readings_total{result="success"}[1m])) * 60
+              instant: true
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [50]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    params: []
+                    type: last
+                  type: threshold
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: info
+          alertname: PicoCargaSucesso
+          team: macapa
+        annotations:
+          summary: "Taxa de leituras processadas com sucesso excedeu 50 requisições por minuto."
