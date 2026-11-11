@@ -117,7 +117,7 @@
                                                               "uid":  "prometheus"
                                                           },
                                            "editorMode":  "code",
-                                           "expr":  "100 * sum by (pod) (container_memory_working_set_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}) / clamp_min(sum by (pod) (container_spec_memory_limit_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\", container_spec_memory_limit_bytes\u003e0}), 1)",
+                                           "expr":  "100 * sum by (pod) (container_memory_working_set_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}) / clamp_min(sum by (pod) (container_spec_memory_limit_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"} \u003e 0), 1)",
                                            "legendFormat":  "{{pod}}",
                                            "range":  true,
                                            "refId":  "A"
@@ -185,7 +185,7 @@
                                    },
                        "targets":  [
                                        {
-                                           "expr":  "100 * sum by (pod) (container_memory_working_set_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}) / clamp_min(sum by (pod) (container_spec_memory_limit_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\", container_spec_memory_limit_bytes\u003e0}), 1)",
+                                           "expr":  "100 * sum by (pod) (container_memory_working_set_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}) / clamp_min(sum by (pod) (container_spec_memory_limit_bytes{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"} \u003e 0), 1)",
                                            "editorMode":  "code",
                                            "instant":  true,
                                            "datasource":  {

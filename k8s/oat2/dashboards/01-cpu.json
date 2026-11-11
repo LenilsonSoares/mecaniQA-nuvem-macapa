@@ -117,7 +117,7 @@
                                                               "uid":  "prometheus"
                                                           },
                                            "editorMode":  "code",
-                                           "expr":  "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}[5m])) / clamp_min(sum by (pod) ((container_spec_cpu_quota{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\", container_spec_cpu_quota\u003e0} / container_spec_cpu_period{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"})), 0.001)",
+                                           "expr":  "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}[5m])) / clamp_min(sum by (pod) (((container_spec_cpu_quota{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"} \u003e 0) / container_spec_cpu_period{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"})), 0.001)",
                                            "legendFormat":  "{{pod}}",
                                            "range":  true,
                                            "refId":  "A"
@@ -185,7 +185,7 @@
                                    },
                        "targets":  [
                                        {
-                                           "expr":  "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}[5m])) / clamp_min(sum by (pod) ((container_spec_cpu_quota{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\", container_spec_cpu_quota\u003e0} / container_spec_cpu_period{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"})), 0.001)",
+                                           "expr":  "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"}[5m])) / clamp_min(sum by (pod) (((container_spec_cpu_quota{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"} \u003e 0) / container_spec_cpu_period{job=\"kubelet-cadvisor\", namespace=\"mecaniqa\", pod!=\"\", container!=\"\", container!=\"POD\"})), 0.001)",
                                            "editorMode":  "code",
                                            "instant":  true,
                                            "datasource":  {
