@@ -1,0 +1,37 @@
+Name:                                                     mecaniqa-iot-hpa
+Namespace:                                                mecaniqa
+Labels:                                                   <none>
+Annotations:                                              <none>
+CreationTimestamp:                                        Wed, 11 Nov 2026 14:57:45 -0300
+Reference:                                                Deployment/mecaniqa-iot
+Metrics:                                                  ( current / target )
+  resource cpu on pods  (as a percentage of request):     239% (239m) / 60%
+  resource memory on pods  (as a percentage of request):  31% (20356Ki) / 70%
+Min replicas:                                             1
+Max replicas:                                             5
+Behavior:
+  Scale Up:
+    Stabilization Window: 0 seconds
+    Select Policy: Max
+    Policies:
+      - Type: Percent  Value: 100  Period: 15 seconds
+      - Type: Pods     Value: 2    Period: 15 seconds
+  Scale Down:
+    Stabilization Window: 60 seconds
+    Select Policy: Min
+    Policies:
+      - Type: Percent  Value: 50  Period: 30 seconds
+Deployment pods:       5 current / 5 desired
+Conditions:
+  Type            Status  Reason            Message
+  ----            ------  ------            -------
+  AbleToScale     True    ReadyForNewScale  recommended size matches current size
+  ScalingActive   True    ValidMetricFound  the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  True    TooManyReplicas   the desired replica count is more than the maximum replica count
+Events:
+  Type     Reason              Age                  From                       Message
+  ----     ------              ----                 ----                       -------
+  Warning  FailedUpdateStatus  27m                  horizontal-pod-autoscaler  etcdserver: request timed out
+  Normal   SuccessfulRescale   17m                  horizontal-pod-autoscaler  New size: 3; reason: cpu resource utilization (percentage of request) above target
+  Normal   SuccessfulRescale   2m22s (x2 over 13m)  horizontal-pod-autoscaler  New size: 3; reason: All metrics below target
+  Normal   SuccessfulRescale   96s (x3 over 16m)    horizontal-pod-autoscaler  New size: 5; reason: cpu resource utilization (percentage of request) above target

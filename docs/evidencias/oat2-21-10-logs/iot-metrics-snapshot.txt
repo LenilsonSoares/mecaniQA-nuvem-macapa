@@ -1,0 +1,96 @@
+# HELP process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE process_virtual_memory_bytes gauge
+process_virtual_memory_bytes 1.984385024e+09
+# HELP process_resident_memory_bytes Resident memory size in bytes.
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes 2.8602368e+07
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds 1.79441990693e+09
+# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE process_cpu_seconds_total counter
+process_cpu_seconds_total 55.400000000000006
+# HELP process_open_fds Number of open file descriptors.
+# TYPE process_open_fds gauge
+process_open_fds 10.0
+# HELP process_max_fds Maximum number of open file descriptors.
+# TYPE process_max_fds gauge
+process_max_fds 1.073741816e+09
+# HELP python_info Python platform information
+# TYPE python_info gauge
+python_info{implementation="CPython",major="3",minor="13",patchlevel="18",version="3.13.18"} 1.0
+# HELP python_gc_objects_collected_total Objects collected during gc
+# TYPE python_gc_objects_collected_total counter
+python_gc_objects_collected_total{generation="0"} 302.0
+python_gc_objects_collected_total{generation="1"} 60.0
+python_gc_objects_collected_total{generation="2"} 0.0
+# HELP python_gc_objects_uncollectable_total Uncollectable objects found during GC
+# TYPE python_gc_objects_uncollectable_total counter
+python_gc_objects_uncollectable_total{generation="0"} 0.0
+python_gc_objects_uncollectable_total{generation="1"} 0.0
+python_gc_objects_uncollectable_total{generation="2"} 0.0
+# HELP python_gc_collections_total Number of times this generation was collected
+# TYPE python_gc_collections_total counter
+python_gc_collections_total{generation="0"} 16.0
+python_gc_collections_total{generation="1"} 1.0
+python_gc_collections_total{generation="2"} 0.0
+# HELP mecaniqa_iot_readings_total Leituras processadas, separadas por resultado e origem.
+# TYPE mecaniqa_iot_readings_total counter
+mecaniqa_iot_readings_total{result="success",source="http"} 76153.0
+mecaniqa_iot_readings_total{result="success",source="simulator"} 928.0
+mecaniqa_iot_readings_total{result="error",source="http"} 19162.0
+mecaniqa_iot_readings_total{result="error",source="simulator"} 94.0
+# HELP mecaniqa_iot_readings_created Leituras processadas, separadas por resultado e origem.
+# TYPE mecaniqa_iot_readings_created gauge
+mecaniqa_iot_readings_created{result="success",source="http"} 1.7944199081497557e+09
+mecaniqa_iot_readings_created{result="success",source="simulator"} 1.7944199081497629e+09
+mecaniqa_iot_readings_created{result="error",source="http"} 1.7944199081497893e+09
+mecaniqa_iot_readings_created{result="error",source="simulator"} 1.794419908149794e+09
+# HELP mecaniqa_iot_processing_duration_seconds Tempo de validação e processamento das leituras em segundos.
+# TYPE mecaniqa_iot_processing_duration_seconds histogram
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.005",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.01",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.025",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.05",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.075",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.1",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.25",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.5",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.75",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="1.0",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="2.5",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="5.0",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="7.5",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="10.0",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="+Inf",result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_count{result="success"} 77081.0
+mecaniqa_iot_processing_duration_seconds_sum{result="success"} 0.7758082219675089
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.005",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.01",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.025",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.05",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.075",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.1",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.25",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.5",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="0.75",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="1.0",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="2.5",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="5.0",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="7.5",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="10.0",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_bucket{le="+Inf",result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_count{result="error"} 19256.0
+mecaniqa_iot_processing_duration_seconds_sum{result="error"} 0.21189985499893282
+# HELP mecaniqa_iot_processing_duration_seconds_created Tempo de validação e processamento das leituras em segundos.
+# TYPE mecaniqa_iot_processing_duration_seconds_created gauge
+mecaniqa_iot_processing_duration_seconds_created{result="success"} 1.7944199081497214e+09
+mecaniqa_iot_processing_duration_seconds_created{result="error"} 1.7944199081497705e+09
+# HELP mecaniqa_iot_inflight_readings Leituras em processamento neste processo.
+# TYPE mecaniqa_iot_inflight_readings gauge
+mecaniqa_iot_inflight_readings 0.0
+# HELP mecaniqa_iot_last_reading_value Último valor válido por tipo de sensor; unidades descritas no guia.
+# TYPE mecaniqa_iot_last_reading_value gauge
+mecaniqa_iot_last_reading_value{sensor_type="engine_temperature"} 97.99
+mecaniqa_iot_last_reading_value{sensor_type="battery_voltage"} 12.98
+

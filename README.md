@@ -1,6 +1,9 @@
-# MecaniQA — OAT 1: Docker, Docker Compose e Kubernetes
+# MecaniQA Cloud — OAT 1 e OAT 2
 
-Projeto acadêmico de conteinerização e orquestração de uma API Java do MecaniQA, com MySQL e Redis provisionados para a aplicação, Docker Compose para execução local, Kubernetes/Minikube para orquestração e Terraform para provisionamento declarativo.
+Projeto acadêmico de infraestrutura do MecaniQA em duas entregas:
+
+- **OAT 1 — Docker, Docker Compose e Kubernetes:** conteinerização e orquestração de uma API Java com MySQL e Redis, Docker Compose para execução local, Kubernetes/Minikube para orquestração e Terraform para provisionamento declarativo.
+- **OAT 2 — Monitorando a Continuidade:** simulador IoT em Python instrumentado, Prometheus e Grafana no Kubernetes, quatro dashboards, quatro alertas, HPA, teste de estresse, runbooks e metas de continuidade. Veja a [seção da OAT 2](#oat-2--monitorando-a-continuidade).
 
 ## Equipe
 
@@ -37,7 +40,10 @@ No Compose, os nomes `db` e `cache` funcionam como DNS interno. No Kubernetes, S
 |-- mecaniqa-k8s.yaml              # Namespace, Secret, PVCs, Deployments e Services
 |-- terraform/                     # infraestrutura Kubernetes como código
 |-- src/br/com/mecaniqa/Application.java
-`-- mecaniQA_oat1_macapa.pdf       # apresentação final para versionamento
+|-- iot/                           # OAT 2: simulador IoT em Python instrumentado
+|-- k8s/oat2/                      # OAT 2: Prometheus, Grafana, alertas e HPA
+|-- scripts/                       # testes, teste de estresse e captura de evidências
+`-- docs/                          # apresentações, registros, runbooks e evidências
 ```
 
 ## Pré-requisitos
@@ -220,8 +226,30 @@ aguarda os Deployments `mecaniqa-iot`, `prometheus` e `grafana`. Para abrir a UI
 use `kubectl port-forward -n mecaniqa svc/grafana 3000:3000` e acesse
 `http://127.0.0.1:3000`. Os arquivos de provisionamento e dashboards ficam em
 `k8s/oat2/`; o ambiente alternativo de desenvolvimento usa `docker-compose.oat2.yml`.
-Alertas, HPA, teste de estresse e continuidade permanecem como entregas posteriores.
 
-## Entrega da OAT 1
+A sessão de **21/10/2026** acrescenta o HPA, os quatro alertas do Grafana e o teste de estresse.
+O fechamento consolida os runbooks e as metas de continuidade.
 
-O arquivo `mecaniQA_oat1_macapa.pdf` deve permanecer na raiz do repositório, ser versionado na branch principal e também enviado ao formulário do Blackboard. Tempo máximo da apresentação: sete minutos.
+| Entrega | Onde está |
+| --- | --- |
+| Simulador Python instrumentado | [`iot/`](iot/) |
+| Prometheus, Grafana e dashboards | [`k8s/oat2/`](k8s/oat2/) |
+| Quatro alertas (CPU, memória, erros e sucessos) | [`k8s/oat2/grafana-alerting.yaml`](k8s/oat2/grafana-alerting.yaml) |
+| HPA (1 a 5 Pods, CPU 60%, memória 70%) | [`k8s/oat2/hpa.yaml`](k8s/oat2/hpa.yaml) |
+| Teste de estresse | [`scripts/stress-test.ps1`](scripts/stress-test.ps1) e [`scripts/stress_generator.py`](scripts/stress_generator.py) |
+| Evidências (capturas e logs) | [`docs/evidencias/`](docs/evidencias/README.md) |
+| Runbooks e metas de SLA, SLO, SLI, RTO e RPO | [`docs/oat2/runbooks-e-continuidade.md`](docs/oat2/runbooks-e-continuidade.md) |
+| Registro da sessão de 21/10 | [`docs/oat2/registro-sessao-21-10.md`](docs/oat2/registro-sessao-21-10.md) |
+
+Para o HPA reagir, a carga precisa ser gerada dentro do cluster. Via `kubectl port-forward`,
+a vazão fica em cerca de 20 requisições por segundo e não atinge o alvo de CPU.
+
+## Apresentações
+
+| OAT | Arquivo |
+| --- | --- |
+| OAT 1 | [`docs/mecaniQA_oat1_macapa.pdf`](docs/mecaniQA_oat1_macapa.pdf) |
+| OAT 2 | [`docs/mecaniQA_oat2_macapa.pdf`](docs/mecaniQA_oat2_macapa.pdf) (fonte editável: [`.pptx`](docs/mecaniQA_oat2_macapa.pptx)) |
+
+Os PDFs são versionados na branch principal e também enviados ao formulário do Blackboard.
+Tempo máximo de cada apresentação: sete minutos.

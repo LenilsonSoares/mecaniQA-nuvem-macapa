@@ -1,0 +1,133 @@
+LAST SEEN   TYPE      REASON                  OBJECT                                     MESSAGE
+29m         Normal    SuccessfulCreate        replicaset/prometheus-6d798b6c4f           Created pod: prometheus-6d798b6c4f-tgdxf
+29m         Normal    SuccessfulCreate        replicaset/grafana-7854c6d98b              Created pod: grafana-7854c6d98b-9tqqm
+29m         Normal    WaitForFirstConsumer    persistentvolumeclaim/grafana-data         waiting for first consumer to be created before binding
+29m         Normal    ExternalProvisioning    persistentvolumeclaim/grafana-data         Waiting for a volume to be created either by the external provisioner 'rancher.io/local-path' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+29m         Normal    ExternalProvisioning    persistentvolumeclaim/prometheus-data      Waiting for a volume to be created either by the external provisioner 'rancher.io/local-path' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+29m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-sn5hw to desktop-control-plane
+29m         Normal    ScalingReplicaSet       deployment/grafana                         Scaled up replica set grafana-7854c6d98b from 0 to 1
+29m         Normal    WaitForFirstConsumer    persistentvolumeclaim/prometheus-data      waiting for first consumer to be created before binding
+29m         Normal    ScalingReplicaSet       deployment/prometheus                      Scaled up replica set prometheus-6d798b6c4f from 0 to 1
+29m         Normal    Pulling                 pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Pulling image "mecaniqa-iot:2.0-20261111145617"
+29m         Normal    Provisioning            persistentvolumeclaim/prometheus-data      External provisioner is provisioning volume for claim "mecaniqa/prometheus-data"
+29m         Normal    ScalingReplicaSet       deployment/mecaniqa-iot                    Scaled up replica set mecaniqa-iot-5fcbf7fcf8 from 0 to 1
+29m         Normal    Provisioning            persistentvolumeclaim/grafana-data         External provisioner is provisioning volume for claim "mecaniqa/grafana-data"
+29m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-sn5hw
+28m         Normal    ProvisioningSucceeded   persistentvolumeclaim/grafana-data         Successfully provisioned volume pvc-8853032a-aaa3-492d-b7a7-9f03714ecef4
+28m         Normal    ProvisioningSucceeded   persistentvolumeclaim/prometheus-data      Successfully provisioned volume pvc-ef26fad2-db3b-45b4-a982-540ad82eaaa6
+28m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Container started
+28m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Container created
+28m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Successfully pulled image "mecaniqa-iot:2.0-20261111145617" in 41.379s (41.379s including waiting). Image size: 43253424 bytes.
+28m         Normal    Scheduled               pod/grafana-7854c6d98b-9tqqm               Successfully assigned mecaniqa/grafana-7854c6d98b-9tqqm to desktop-control-plane
+28m         Normal    Scheduled               pod/prometheus-6d798b6c4f-tgdxf            Successfully assigned mecaniqa/prometheus-6d798b6c4f-tgdxf to desktop-control-plane
+28m         Normal    Pulling                 pod/grafana-7854c6d98b-9tqqm               Pulling image "grafana/grafana:12.2.0"
+28m         Normal    Pulling                 pod/prometheus-6d798b6c4f-tgdxf            Pulling image "prom/prometheus:v3.15.0"
+27m         Warning   FailedUpdateStatus      horizontalpodautoscaler/mecaniqa-iot-hpa   etcdserver: request timed out
+27m         Warning   Unhealthy               pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Liveness probe failed: Get "http://10.244.0.6:8000/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+6m36s       Warning   Unhealthy               pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Readiness probe failed: Get "http://10.244.0.6:8000/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+24m         Normal    Pulled                  pod/prometheus-6d798b6c4f-tgdxf            Successfully pulled image "prom/prometheus:v3.15.0" in 1m12.817s (3m38.18s including waiting). Image size: 114044730 bytes.
+24m         Warning   Failed                  pod/grafana-7854c6d98b-9tqqm               Error: failed to sync secret cache: timed out waiting for the condition
+26m         Normal    Pulled                  pod/grafana-7854c6d98b-9tqqm               Successfully pulled image "grafana/grafana:12.2.0" in 2m25.408s (2m25.408s including waiting). Image size: 204417617 bytes.
+21m         Normal    Pulled                  pod/grafana-7854c6d98b-9tqqm               Container image "grafana/grafana:12.2.0" already present on machine and can be accessed by the pod
+24m         Normal    Created                 pod/prometheus-6d798b6c4f-tgdxf            Container created
+24m         Normal    Started                 pod/prometheus-6d798b6c4f-tgdxf            Container started
+21m         Normal    Started                 pod/grafana-7854c6d98b-9tqqm               Container started
+21m         Normal    Created                 pod/grafana-7854c6d98b-9tqqm               Container created
+24m         Warning   Unhealthy               pod/grafana-7854c6d98b-9tqqm               Startup probe failed: Get "http://10.244.0.9:3000/api/health": dial tcp 10.244.0.9:3000: connect: connection refused
+23m         Warning   Unhealthy               pod/grafana-7854c6d98b-9tqqm               Readiness probe failed: Get "http://10.244.0.9:3000/api/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+23m         Warning   Unhealthy               pod/grafana-7854c6d98b-9tqqm               Readiness probe failed: HTTP probe failed with statuscode: 503
+23m         Warning   Unhealthy               pod/grafana-7854c6d98b-9tqqm               Liveness probe failed: HTTP probe failed with statuscode: 503
+18m         Warning   Unhealthy               pod/grafana-7854c6d98b-9tqqm               Liveness probe failed: Get "http://10.244.0.9:3000/api/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+22m         Normal    Killing                 pod/grafana-7854c6d98b-9tqqm               Container grafana failed liveness probe, will be restarted
+23m         Warning   Unhealthy               pod/grafana-7854c6d98b-9tqqm               Readiness probe failed: Get "http://10.244.0.9:3000/api/health": dial tcp 10.244.0.9:3000: connect: connection refused
+17m         Normal    SuccessfulCreate        job/stress-interno                         Created pod: stress-interno-jn5zb
+17m         Normal    Scheduled               pod/stress-interno-jn5zb                   Successfully assigned mecaniqa/stress-interno-jn5zb to desktop-control-plane
+17m         Normal    Pulled                  pod/stress-interno-jn5zb                   Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+17m         Normal    Started                 pod/stress-interno-jn5zb                   Container started
+17m         Normal    Created                 pod/stress-interno-jn5zb                   Container created
+17m         Normal    SuccessfulRescale       horizontalpodautoscaler/mecaniqa-iot-hpa   New size: 3; reason: cpu resource utilization (percentage of request) above target
+17m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-gr5bb
+17m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-5gwqq          Container started
+17m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-gr5bb          Container created
+17m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-gr5bb          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+17m         Normal    ScalingReplicaSet       deployment/mecaniqa-iot                    Scaled up replica set mecaniqa-iot-5fcbf7fcf8 from 1 to 3
+17m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-5gwqq
+17m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-5gwqq          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-5gwqq to desktop-control-plane
+17m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-gr5bb          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-gr5bb to desktop-control-plane
+17m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-5gwqq          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+17m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-5gwqq          Container created
+17m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-gr5bb          Container started
+96s         Normal    SuccessfulRescale       horizontalpodautoscaler/mecaniqa-iot-hpa   New size: 5; reason: cpu resource utilization (percentage of request) above target
+96s         Normal    ScalingReplicaSet       deployment/mecaniqa-iot                    Scaled up replica set mecaniqa-iot-5fcbf7fcf8 from 3 to 5
+16m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-rktgj          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+16m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-v4rdp          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-v4rdp to desktop-control-plane
+16m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-rktgj          Container started
+16m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-rktgj
+16m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-v4rdp
+16m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-v4rdp          Container started
+16m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-v4rdp          Container created
+16m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-v4rdp          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+16m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-rktgj          Container created
+16m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-rktgj          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-rktgj to desktop-control-plane
+14m         Normal    Completed               job/stress-interno                         Job completed
+13m         Normal    SuccessfulDelete        replicaset/mecaniqa-iot-5fcbf7fcf8         Deleted pod: mecaniqa-iot-5fcbf7fcf8-v4rdp
+2m22s       Normal    SuccessfulRescale       horizontalpodautoscaler/mecaniqa-iot-hpa   New size: 3; reason: All metrics below target
+13m         Normal    Killing                 pod/mecaniqa-iot-5fcbf7fcf8-v4rdp          Stopping container simulator
+2m22s       Normal    ScalingReplicaSet       deployment/mecaniqa-iot                    Scaled down replica set mecaniqa-iot-5fcbf7fcf8 from 5 to 3
+13m         Normal    Killing                 pod/mecaniqa-iot-5fcbf7fcf8-rktgj          Stopping container simulator
+13m         Normal    SuccessfulDelete        replicaset/mecaniqa-iot-5fcbf7fcf8         Deleted pod: mecaniqa-iot-5fcbf7fcf8-rktgj
+12m         Normal    Started                 pod/stress-interno-6w6l9                   Container started
+12m         Normal    SuccessfulCreate        job/stress-interno                         Created pod: stress-interno-6w6l9
+12m         Normal    Created                 pod/stress-interno-6w6l9                   Container created
+12m         Normal    Scheduled               pod/stress-interno-6w6l9                   Successfully assigned mecaniqa/stress-interno-6w6l9 to desktop-control-plane
+12m         Normal    Pulled                  pod/stress-interno-6w6l9                   Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+12m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-2gmhx
+12m         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-9bxj4
+12m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-2gmhx          Container started
+12m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-2gmhx          Container created
+12m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-2gmhx          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+12m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-2gmhx          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-2gmhx to desktop-control-plane
+12m         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-9bxj4          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+12m         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-9bxj4          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-9bxj4 to desktop-control-plane
+12m         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-9bxj4          Container started
+12m         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-9bxj4          Container created
+7m59s       Normal    SuccessfulDelete        replicaset/grafana-7854c6d98b              Deleted pod: grafana-7854c6d98b-9tqqm
+7m59s       Normal    Killing                 pod/grafana-7854c6d98b-9tqqm               Stopping container grafana
+7m59s       Normal    ScalingReplicaSet       deployment/grafana                         Scaled down replica set grafana-7854c6d98b from 1 to 0
+7m58s       Normal    SuccessfulCreate        replicaset/grafana-68df5989b6              Created pod: grafana-68df5989b6-h5cv7
+7m58s       Normal    Pulled                  pod/grafana-68df5989b6-h5cv7               Container image "grafana/grafana:12.2.0" already present on machine and can be accessed by the pod
+7m58s       Normal    Scheduled               pod/grafana-68df5989b6-h5cv7               Successfully assigned mecaniqa/grafana-68df5989b6-h5cv7 to desktop-control-plane
+7m58s       Normal    ScalingReplicaSet       deployment/grafana                         Scaled up replica set grafana-68df5989b6 from 0 to 1
+7m58s       Normal    Created                 pod/grafana-68df5989b6-h5cv7               Container created
+7m57s       Normal    Started                 pod/grafana-68df5989b6-h5cv7               Container started
+7m48s       Normal    Completed               job/stress-interno                         Job completed
+7m30s       Normal    Pulled                  pod/stress-interno-tz5d8                   Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+7m30s       Normal    Started                 pod/stress-interno-tz5d8                   Container started
+7m30s       Normal    Created                 pod/stress-interno-tz5d8                   Container created
+7m30s       Normal    SuccessfulCreate        job/stress-interno                         Created pod: stress-interno-tz5d8
+7m30s       Normal    Scheduled               pod/stress-interno-tz5d8                   Successfully assigned mecaniqa/stress-interno-tz5d8 to desktop-control-plane
+6m15s       Warning   Unhealthy               pod/mecaniqa-iot-5fcbf7fcf8-9bxj4          Readiness probe failed: Get "http://10.244.0.18:8000/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+7m7s        Warning   Unhealthy               pod/mecaniqa-iot-5fcbf7fcf8-5gwqq          Readiness probe failed: Get "http://10.244.0.12:8000/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+7m5s        Warning   Unhealthy               pod/prometheus-6d798b6c4f-tgdxf            Liveness probe failed: Get "http://10.244.0.10:9090/-/healthy": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+6m52s       Warning   Unhealthy               pod/mecaniqa-iot-5fcbf7fcf8-gr5bb          Readiness probe failed: Get "http://10.244.0.13:8000/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+6m45s       Warning   Unhealthy               pod/mecaniqa-iot-5fcbf7fcf8-2gmhx          Readiness probe failed: Get "http://10.244.0.17:8000/health": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+3m25s       Normal    Completed               job/stress-interno                         Job completed
+2m21s       Normal    Killing                 pod/mecaniqa-iot-5fcbf7fcf8-5gwqq          Stopping container simulator
+2m21s       Normal    Killing                 pod/mecaniqa-iot-5fcbf7fcf8-sn5hw          Stopping container simulator
+2m21s       Normal    SuccessfulDelete        replicaset/mecaniqa-iot-5fcbf7fcf8         Deleted pod: mecaniqa-iot-5fcbf7fcf8-sn5hw
+2m21s       Normal    SuccessfulDelete        replicaset/mecaniqa-iot-5fcbf7fcf8         Deleted pod: mecaniqa-iot-5fcbf7fcf8-5gwqq
+110s        Normal    SuccessfulCreate        job/stress-interno                         Created pod: stress-interno-mxsf4
+110s        Normal    Scheduled               pod/stress-interno-mxsf4                   Successfully assigned mecaniqa/stress-interno-mxsf4 to desktop-control-plane
+109s        Normal    Pulled                  pod/stress-interno-mxsf4                   Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+109s        Normal    Created                 pod/stress-interno-mxsf4                   Container created
+109s        Normal    Started                 pod/stress-interno-mxsf4                   Container started
+96s         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-pm5hb          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+96s         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-pm5hb          Container created
+96s         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-pm5hb          Container started
+96s         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-pm5hb
+96s         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-l7qnz          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-l7qnz to desktop-control-plane
+96s         Normal    Scheduled               pod/mecaniqa-iot-5fcbf7fcf8-pm5hb          Successfully assigned mecaniqa/mecaniqa-iot-5fcbf7fcf8-pm5hb to desktop-control-plane
+96s         Normal    Created                 pod/mecaniqa-iot-5fcbf7fcf8-l7qnz          Container created
+96s         Normal    SuccessfulCreate        replicaset/mecaniqa-iot-5fcbf7fcf8         Created pod: mecaniqa-iot-5fcbf7fcf8-l7qnz
+96s         Normal    Pulled                  pod/mecaniqa-iot-5fcbf7fcf8-l7qnz          Container image "mecaniqa-iot:2.0-20261111145617" already present on machine and can be accessed by the pod
+96s         Normal    Started                 pod/mecaniqa-iot-5fcbf7fcf8-l7qnz          Container started

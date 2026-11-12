@@ -47,6 +47,19 @@ Prints de terminal mostram a saída real dos comandos indicados no topo de cada 
 | `05-dashboard-memoria.png` | Memória dos Pods durante a carga |
 | `06-hpa-escalonamento.png` | HPA em 5/5 réplicas, `kubectl top` e eventos `SuccessfulRescale` |
 
+### Logs do teste de estresse (`oat2-21-10-logs/`)
+
+Saída real dos comandos, capturada no pico da carga.
+
+| Arquivo | O que comprova |
+| --- | --- |
+| `hpa-describe.txt` | `kubectl describe hpa`: CPU em 239% contra alvo de 60%, 5/5 réplicas e eventos `SuccessfulRescale` (subida e descida) |
+| `hpa.yaml` | Estado do objeto HPA no cluster durante o teste |
+| `pods-scaled.txt` | Cinco Pods do simulador `1/1 Running`, sem reinícios |
+| `top-pods.txt` | `kubectl top pods`: consumo de CPU e memória por Pod durante a carga |
+| `k8s-events.txt` | Eventos do namespace, incluindo os reescalonamentos do HPA |
+| `iot-metrics-snapshot.txt` | Endpoint `/metrics` do simulador durante a sessão de teste (contadores de sucesso e erro) |
+
 Teste de estresse: gerador executado dentro do cluster (Job) contra o Service `mecaniqa-iot`,
 60 threads, 20% de payloads inválidos. Rodada de 180 s: 262.544 requisições (~1.440 req/s),
 209.525 sucessos, 52.709 rejeições 422, sem reinícios nem `OOMKilled`. O HPA escalou de 1 para

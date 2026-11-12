@@ -1,0 +1,9 @@
+NAME                            CPU(cores)   MEMORY(bytes)   
+grafana-68df5989b6-h5cv7        19m          135Mi           
+mecaniqa-iot-5fcbf7fcf8-2gmhx   240m         20Mi            
+mecaniqa-iot-5fcbf7fcf8-9bxj4   237m         19Mi            
+mecaniqa-iot-5fcbf7fcf8-gr5bb   244m         20Mi            
+mecaniqa-iot-5fcbf7fcf8-l7qnz   239m         19Mi            
+mecaniqa-iot-5fcbf7fcf8-pm5hb   237m         19Mi            
+prometheus-6d798b6c4f-tgdxf     6m           49Mi            
+stress-interno-mxsf4            1937m        36Mi            

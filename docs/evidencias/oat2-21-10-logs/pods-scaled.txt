@@ -1,0 +1,6 @@
+NAME                            READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
+mecaniqa-iot-5fcbf7fcf8-2gmhx   1/1     Running   0          12m   10.244.0.17   desktop-control-plane   <none>           <none>
+mecaniqa-iot-5fcbf7fcf8-9bxj4   1/1     Running   0          12m   10.244.0.18   desktop-control-plane   <none>           <none>
+mecaniqa-iot-5fcbf7fcf8-gr5bb   1/1     Running   0          17m   10.244.0.13   desktop-control-plane   <none>           <none>
+mecaniqa-iot-5fcbf7fcf8-l7qnz   1/1     Running   0          96s   10.244.0.22   desktop-control-plane   <none>           <none>
+mecaniqa-iot-5fcbf7fcf8-pm5hb   1/1     Running   0          96s   10.244.0.23   desktop-control-plane   <none>           <none>
