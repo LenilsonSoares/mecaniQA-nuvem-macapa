@@ -1,4 +1,5 @@
 import json
+import sys
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from http.client import HTTPConnection
@@ -74,8 +75,13 @@ class HttpTests(unittest.TestCase):
         status, headers, body = self.request("GET", "/metrics")
         self.assertEqual(status, 200)
         self.assertIn("text/plain", headers["Content-Type"])
-        self.assertIn(b"process_resident_memory_bytes", body)
         self.assertIn(b"mecaniqa_iot_readings_total", body)
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "métricas de processo só existem no Linux (/proc)")
+    def test_process_metrics_on_linux(self):
+        # O container roda em Linux; no Windows o ProcessCollector não exporta memória do processo.
+        _, _, body = self.request("GET", "/metrics")
+        self.assertIn(b"process_resident_memory_bytes", body)
 
     def test_shutdown_reports_unavailable(self):
         self.stop.set()

@@ -12,6 +12,8 @@ __pycache__/
 
 # Credenciais locais
 .env
+.env.*
+!.env.example
 *.tfvars
 !*.tfvars.example
 
@@ -28,3 +30,9 @@ override.tf.json
 # Materiais de consulta das aulas (slides, enunciados, cadernos e PEA do professor)
 /docs/arquivos/
 /docs/aruivos/
+
+# Sistema operacional, logs e caches de teste
+.DS_Store
+Thumbs.db
+*.log
+.pytest_cache/

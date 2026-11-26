@@ -10,3 +10,14 @@ out
 .terraform
 *.tfstate*
 terraform
+
+# O build da API Java só precisa de src/; o restante não deve ir para o contexto do Docker.
+docs
+iot
+k8s
+scripts
+monitoring
+oat4
+*.pdf
+*.pptx
+*.md
