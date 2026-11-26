@@ -1,8 +1,7 @@
 services:
   db:
     build:
-      context: .
-      dockerfile: docker/mysql/Dockerfile
+      context: ./docker/mysql
     image: mecaniqa-mysql:8.0
     container_name: mecaniqa-mysql
     restart: unless-stopped
@@ -24,8 +23,7 @@ services:
 
   cache:
     build:
-      context: .
-      dockerfile: docker/redis/Dockerfile
+      context: ./docker/redis
     image: mecaniqa-redis:alpine
     container_name: mecaniqa-redis
     restart: unless-stopped
@@ -43,8 +41,7 @@ services:
 
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./api
     image: mecaniqa-api:1.1
     container_name: mecaniqa-java-api
     restart: unless-stopped

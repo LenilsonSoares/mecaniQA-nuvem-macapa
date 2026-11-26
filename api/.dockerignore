@@ -1,0 +1,5 @@
+# Contexto de build da API Java: só src/ é copiado para a imagem.
+out
+*.class
+*.jar
+.env

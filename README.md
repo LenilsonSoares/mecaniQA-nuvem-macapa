@@ -1,9 +1,10 @@
-# MecaniQA Cloud — OAT 1 e OAT 2
+# MecaniQA Cloud — Computação em Nuvem
 
-Projeto acadêmico de infraestrutura do MecaniQA em duas entregas:
+Projeto acadêmico de infraestrutura do MecaniQA, organizado por entrega:
 
 - **OAT 1 — Docker, Docker Compose e Kubernetes:** conteinerização e orquestração de uma API Java com MySQL e Redis, Docker Compose para execução local, Kubernetes/Minikube para orquestração e Terraform para provisionamento declarativo.
 - **OAT 2 — Monitorando a Continuidade:** simulador IoT em Python instrumentado, Prometheus e Grafana no Kubernetes, quatro dashboards, quatro alertas, HPA, teste de estresse, runbooks e metas de continuidade. Veja a [seção da OAT 2](#oat-2--monitorando-a-continuidade).
+- **OAT 4 — Observabilidade em Nuvem e Predição de Requisições** (integrada com Modelos de Aprendizado de Máquina): API Django com Prometheus e Grafana, coleta de 3 dias de telemetria e modelos preditivos. Veja [`oat4/README.md`](oat4/README.md).
 
 ## Equipe
 
@@ -33,17 +34,22 @@ No Compose, os nomes `db` e `cache` funcionam como DNS interno. No Kubernetes, S
 
 ```text
 .
-|-- Dockerfile                     # imagem multi-stage da API Java
-|-- docker-compose.yml             # execução local dos três serviços
-|-- docker/mysql/Dockerfile        # imagem do MySQL
-|-- docker/redis/Dockerfile        # imagem do Redis com AOF
-|-- mecaniqa-k8s.yaml              # Namespace, Secret, PVCs, Deployments e Services
-|-- terraform/                     # infraestrutura Kubernetes como código
-|-- src/br/com/mecaniqa/Application.java
+|-- api/                           # OAT 1: API Java (Dockerfile multi-stage + src/)
+|-- docker/mysql/Dockerfile        # OAT 1: imagem do MySQL
+|-- docker/redis/Dockerfile        # OAT 1: imagem do Redis com AOF
+|-- docker-compose.yml             # OAT 1: execução local dos três serviços
+|-- k8s/oat1/mecaniqa-k8s.yaml     # OAT 1: Namespace, Secret, PVCs, Deployments e Services
+|-- terraform/                     # OAT 1: infraestrutura Kubernetes como código
 |-- iot/                           # OAT 2: simulador IoT em Python instrumentado
 |-- k8s/oat2/                      # OAT 2: Prometheus, Grafana, alertas e HPA
+|-- docker-compose.oat2.yml        # OAT 2: ambiente alternativo de desenvolvimento
+|-- monitoring/                    # OAT 2: configuração local do Prometheus
+|-- oat4/                          # OAT 4: observabilidade e predição de requisições
 |-- scripts/                       # testes, teste de estresse e captura de evidências
-`-- docs/                          # apresentações, registros, runbooks e evidências
+`-- docs/
+    |-- apresentacoes/             # PDFs apresentados em cada OAT
+    |-- evidencias/                # capturas e logs dos testes
+    `-- oat2/                      # registros das sessões, runbooks e continuidade
 ```
 
 ## Pré-requisitos
@@ -114,7 +120,7 @@ kubectl create secret generic mecaniqa-secrets `
   --namespace mecaniqa `
   --from-literal=mysql-root-password=$env:MYSQL_ROOT_PASSWORD `
   --dry-run=client -o yaml | kubectl apply -f -
-kubectl apply -f mecaniqa-k8s.yaml
+kubectl apply -f k8s/oat1/mecaniqa-k8s.yaml
 ```
 
 > Em produção, use um gerenciador de segredos e nunca armazene credenciais no Git.
@@ -248,8 +254,8 @@ a vazão fica em cerca de 20 requisições por segundo e não atinge o alvo de C
 
 | OAT | Arquivo |
 | --- | --- |
-| OAT 1 | [`docs/mecaniQA_oat1_macapa.pdf`](docs/mecaniQA_oat1_macapa.pdf) |
-| OAT 2 | [`docs/mecaniQA_oat2_macapa.pdf`](docs/mecaniQA_oat2_macapa.pdf) (fonte editável: [`.pptx`](docs/mecaniQA_oat2_macapa.pptx)) |
+| OAT 1 | [`docs/apresentacoes/mecaniQA_oat1_macapa.pdf`](docs/apresentacoes/mecaniQA_oat1_macapa.pdf) |
+| OAT 2 | [`docs/apresentacoes/mecaniQA_oat2_macapa.pdf`](docs/apresentacoes/mecaniQA_oat2_macapa.pdf) (fonte editável: [`.pptx`](docs/apresentacoes/mecaniQA_oat2_macapa.pptx)) |
 
 Os PDFs são versionados na branch principal e também enviados ao formulário do Blackboard.
 Tempo máximo de cada apresentação: sete minutos.

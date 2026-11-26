@@ -37,7 +37,7 @@ Write-Host "[4/5] CONSOLIDANDO EVIDENCIAS DO CLUSTER..." -ForegroundColor Yellow
 
 Write-Host ""
 Write-Host "[5/5] CAPTURANDO PRINTS AUTOMATICOS DO GRAFANA VIA PLAYWRIGHT..." -ForegroundColor Yellow
-python "$repoRoot\scripts\take_screenshots.py"
+python "$repoRoot\scripts\take_screenshots.py" --out "$repoRoot\docs\evidencias"
 
 Write-Host ""
 Write-Host "=================================================================" -ForegroundColor Green
