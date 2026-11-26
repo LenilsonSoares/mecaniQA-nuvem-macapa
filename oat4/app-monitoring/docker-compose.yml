@@ -1,0 +1,61 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: mecaniqa-api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  prometheus:
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+    container_name: mecaniqa-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  grafana:
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+    container_name: mecaniqa-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Equipe Macapá: o gerador de tráfego do professor roda como container, e não num terminal.
+  # Assim ele volta sozinho após reinício do Docker ou queda de energia (restart: unless-stopped),
+  # evitando buracos na coleta contínua de 3 dias.
+  gerador:
+    image: python:3.12-slim
+    container_name: mecaniqa-gerador
+    working_dir: /app
+    volumes:
+      - ./scripts:/app/scripts:ro
+    command: ["python", "-u", "scripts/gerar_trafego.py", "--url", "http://api:8000", "--log-every", "500"]
+    environment:
+      # O padrão diário do gerador usa o relógio local (picos ~10h e ~15h).
+      # "<-03>3" = UTC-3 (horário de Brasília/Bahia) sem depender de pacote de fuso no container.
+      TZ: "<-03>3"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+  grafana_data:
