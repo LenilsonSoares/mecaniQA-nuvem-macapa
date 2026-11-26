@@ -24,3 +24,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Materiais de consulta das aulas (slides, enunciados, cadernos e PEA do professor)
+/docs/arquivos/
+/docs/aruivos/
