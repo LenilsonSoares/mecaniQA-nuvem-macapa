@@ -248,7 +248,8 @@
           "color": {
             "mode": "fixed",
             "fixedColor": "green"
-          }
+          },
+          "min": 0
         },
         "overrides": []
       },

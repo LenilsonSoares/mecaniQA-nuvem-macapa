@@ -65,6 +65,9 @@ cd oat4/coleta
 py coletar_prometheus.py            # gera ../dados/serie_horaria.csv (96 h até a última hora cheia)
 ```
 
+> A 1ª hora do CSV precisa estar completa. Coleta iniciada em 27/11 às 16:14 → a primeira hora
+> cheia é 17:00 → rode a exportação **depois de 01/12 às 17:00** (o script avisa se a 1ª hora vier vazia).
+
 ## 3. Analisar
 
 ```powershell
@@ -95,7 +98,7 @@ e já tem os 18 slides, com roteiro de fala nas anotações de cada slide.
    ```powershell
    py -m pip install -r requirements.txt
    py -m playwright install chromium
-   py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # início das 72 h avaliadas
+   py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # 1ª hora cheia da coleta (com o aquecimento)
    ```
    Eles vão para `apresentacao/prints/` com os nomes do [LEIA-ME](apresentacao/prints/LEIA-ME.md).
 2. Rode, na pasta `oat4/`:
@@ -116,7 +119,7 @@ Enquanto não houver coleta, o PDF sai como `mecaniQA_oat4_macapa_RASCUNHO.pdf`,
   MAE e MSE calculados separadamente para sucesso e erro.
 - **Random Forest (walk-forward):** para cada hora da janela, treina só com as horas anteriores
   e prevê a hora seguinte; os erros são agrupados nas mesmas partições dos baselines.
-- **Features:** hora do dia, período do dia, dia da semana, lags (1, 2, 3, 24 h), médias e
+- **Features:** hora do dia, período do dia, lags (1, 2, 3, 24 h), médias e
   desvios móveis (3, 6, 12, 24 h), tendência entre horas consecutivas e a outra série defasada.
 
 ## Pontuação (barema da OAT 4)

@@ -58,10 +58,13 @@ def carregar_serie(caminho: Path) -> pd.DataFrame:
     dados = dados.reindex(completo).rename_axis("timestamp")
     # Horas sem dado ficam marcadas: não entram nas métricas nem no treino do modelo.
     dados["sem_dado"] = dados[list(SERIES)].isna().any(axis=1)
+    # Lags e médias olham até 24 h para trás: as 24 h depois de um buraco usariam o valor
+    # repetido e também ficam fora do MAE/MSE (para todos os modelos, mantendo a comparação justa).
+    dados["fora_das_metricas"] = dados["sem_dado"].astype(int).rolling(25, min_periods=1).max().astype(bool)
     faltantes = int(dados["sem_dado"].sum())
     if faltantes:
-        print(f"Aviso: {faltantes} hora(s) sem dado; preenchidas com a última hora conhecida (só o passado) "
-              "e excluídas das métricas.")
+        print(f"Aviso: {faltantes} hora(s) sem dado; preenchidas com a última hora conhecida (só o passado). "
+              "Elas e as 24 h seguintes ficam fora do MAE e do MSE.")
         # ffill usa apenas o passado; interpolar usaria a hora seguinte e vazaria informação do futuro.
         dados[list(SERIES)] = dados[list(SERIES)].ffill()
         dados = dados.dropna(subset=list(SERIES))  # horas iniciais sem nenhum valor anterior
@@ -139,6 +142,8 @@ def avaliar_particoes(real: pd.Series, previsoes: pd.DataFrame, inicio_janela: i
     for nome_particao, horas in PARTICOES.items():
         fatia = slice(inicio_janela, inicio_janela + horas)
         manter = observada.iloc[fatia].to_numpy()
+        if not manter.any():
+            continue  # partição inteira sem hora válida (buraco longo na coleta)
         y = real.iloc[fatia][manter]
         for modelo in previsoes.columns:
             p = previsoes[modelo].iloc[fatia][manter]
@@ -259,7 +264,7 @@ def main() -> None:
         previsoes[NOME_RF], importancias = prever_random_forest(
             dados, serie, inicio_janela, args.refit_a_cada, args.semente
         )
-        tabela = avaliar_particoes(dados[serie], previsoes, inicio_janela, dados["sem_dado"])
+        tabela = avaliar_particoes(dados[serie], previsoes, inicio_janela, dados["fora_das_metricas"])
         tabela.insert(0, "serie", serie)
         todas.append(tabela)
 

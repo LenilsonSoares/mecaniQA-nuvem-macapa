@@ -175,7 +175,7 @@ def _ponta_de_seta():
 
 
 def fonte(slide, texto):
-    caixa(slide, 0.38, 4.72, 8.6, 0.28, texto, tamanho=8, cor=CINZA_TEXTO)
+    caixa(slide, 0.38, 4.7, 8.6, 0.3, texto, tamanho=10, cor=CINZA_TEXTO)
 
 
 def destaque(slide, x, y, w, texto, tamanho=13):
@@ -471,7 +471,7 @@ def slide_coleta(s, r):
              "uma linha por hora. As métricas são reais, medidas na API; o tráfego vem do gerador que simula as "
              "oficinas. O primeiro dia é só histórico, porque o lag de 24 horas precisa do dia anterior; "
              "os três últimos dias, 72 horas, são a janela avaliada. Não houve buraco na coleta "
-             "(ou: houve X horas sem dado, tratadas por interpolação).")
+             "(ou: houve X horas sem dado; repetimos a hora anterior só para calcular os lags e deixamos essas horas fora do MAE e do MSE).")
 
 
 def slide_baselines(s):

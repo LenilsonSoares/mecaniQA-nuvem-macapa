@@ -115,8 +115,8 @@
     {
       "id": 3,
       "type": "stat",
-      "title": "Taxa de erro (1 h)",
-      "description": "Percentual de respostas com erro sobre o total na última hora.",
+      "title": "Taxa de erro (24 h)",
+      "description": "Percentual de respostas com erro sobre o total nas últimas 24 h.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -133,8 +133,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "100 * sum(increase(mecaniqa_api_requests_error_total[1h])) / sum(increase(mecaniqa_api_requests_total[1h]))",
-          "legendFormat": "Taxa de erro (1 h)",
+          "expr": "100 * sum(increase(mecaniqa_api_requests_error_total[24h])) / sum(increase(mecaniqa_api_requests_total[24h]))",
+          "legendFormat": "Taxa de erro (24 h)",
           "refId": "A",
           "range": true
         }
@@ -248,7 +248,8 @@
           "color": {
             "mode": "fixed",
             "fixedColor": "red"
-          }
+          },
+          "min": 0
         },
         "overrides": []
       },

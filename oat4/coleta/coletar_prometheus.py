@@ -32,9 +32,10 @@ CONSULTAS = {
 }
 
 # Raspagem a cada 5 s → 720 amostras por hora; abaixo de 90% a hora é considerada sem dado.
+# up vale 1 (API respondeu) ou 0 (caiu): sum_over_time conta só as raspagens com a API no ar.
 AMOSTRAS_POR_HORA = 3600 // 5
 COBERTURA_MINIMA = 0.9
-CONSULTA_COBERTURA = 'count_over_time(up{job="mecaniqa-django-api"}[1h])'
+CONSULTA_COBERTURA = 'sum_over_time(up{job="mecaniqa-django-api"}[1h])'
 
 PASTA_OAT4 = Path(__file__).resolve().parents[1]
 SAIDA_PADRAO = PASTA_OAT4 / "dados" / "serie_horaria.csv"
@@ -113,6 +114,11 @@ def main() -> int:
     if faltantes:
         print(f"ATENÇÃO: {len(faltantes)} hora(s) sem dado (coleta parada?). Primeira: {faltantes[0]:%d/%m %H:%M}.")
         print("Registre esses horários na apresentação e explique o tratamento.")
+    if any(linhas[0][nome] == "" for nome in CONSULTAS):
+        print(f"ERRO: a primeira hora ({linhas[0]['timestamp']}) está incompleta: a coleta começou no meio dela "
+              "ou ainda não tinha começado.")
+        print("Rode de novo depois da próxima hora cheia (ou ajuste --fim/--horas) para ter todas as horas completas.")
+        return 1
     return 0
 
 
