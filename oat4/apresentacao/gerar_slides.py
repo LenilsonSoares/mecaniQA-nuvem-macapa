@@ -586,7 +586,8 @@ def slide_features(s):
     for k, serie in enumerate(("sucesso", "erro")):
         imagem_ou_espaco(s, RESULTADOS / f"05_importancia_features_{serie}.png", 0.3 + k * 4.75, 2.32, 4.6, 2.33,
                          f"importância das features ({serie})  →  resultados/05_importancia_features_{serie}.png")
-    fonte(s, "Todas as features usam só horas anteriores (shift) · Fonte: analise/analise_oat4.py · criar_features()")
+    fonte(s, "Só horas anteriores (shift) · sem dia da semana: em 4 dias cada dia aparece 1 vez · "
+             "Fonte: analise/analise_oat4.py · criar_features()")
     notas(s, "Apresentador 4 (50 s): Transformamos a série em colunas que o modelo entende. Calendário, porque o "
              "tráfego depende da hora; memória, com os lags, incluindo a mesma hora de ontem; janelas, com média e "
              "desvio, que medem nível e instabilidade; e tendência, com a variação de uma hora para outra e a outra "
