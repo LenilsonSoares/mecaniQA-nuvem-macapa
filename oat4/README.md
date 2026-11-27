@@ -70,8 +70,10 @@ py coletar_prometheus.py            # gera ../dados/serie_horaria.csv (96 h até
 ```powershell
 cd oat4
 py -m pip install -r requirements.txt
-py analise/analise_oat4.py
+py apresentacao/capturar_prints.py --analise   # roda analise/analise_oat4.py e salva o print do terminal
 ```
+
+(`py analise/analise_oat4.py` roda a mesma análise sem gerar o print.)
 
 Saídas em `resultados/`:
 
@@ -87,7 +89,7 @@ Saídas em `resultados/`:
 ## 4. Slides
 
 A apresentação segue o **Modelo de Apresentação da disciplina** (base: `docs/apresentacoes/mecaniQA_oat2_macapa.pptx`)
-e já tem os 17 slides, com roteiro de fala nas anotações de cada slide.
+e já tem os 18 slides, com roteiro de fala nas anotações de cada slide.
 
 1. No fim da coleta, **com a pilha ainda rodando**, gere os prints (Docker, Prometheus e os 2 dashboards):
    ```powershell

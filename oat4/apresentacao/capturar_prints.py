@@ -6,6 +6,7 @@ Gera em apresentacao/prints/ (os nomes que o gerador de slides espera):
     dashboard_sucesso.png     Grafana, dashboard de sucesso, período da coleta
     dashboard_erro.png        Grafana, dashboard de erro, período da coleta
     coleta_grafana_3dias.png  painéis "por hora" de sucesso e erro, um sobre o outro
+    analise_terminal.png      (com --analise) execução real de analise/analise_oat4.py
 
 Os dashboards são capturados em modo quiosque (sem menus do Grafana), com escala 2x
 (nítido no projetor) e uma faixa de legenda com o período e a hora da captura.
@@ -14,11 +15,15 @@ Uso (na pasta oat4, com a pilha rodando):
     .venv/Scripts/python.exe apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"
     .venv/Scripts/python.exe apresentacao/capturar_prints.py --inicio "2026-11-27 17:00" --tema dark
 Sem --inicio, usa as últimas 72 horas.
+Depois de coleta/coletar_prometheus.py, rode a análise já gerando o print do terminal:
+    .venv/Scripts/python.exe apresentacao/capturar_prints.py --analise
 """
 
 import argparse
 import base64
+import os
 import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -86,10 +91,31 @@ def print_terminal(arquivo: Path):
     momento = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     linhas = [("prompt", f"PS {PILHA}> docker compose ps")] + [("saida", l) for l in saida.splitlines()]
     linhas += [("saida", ""), ("prompt", f"PS {PILHA}> Get-Date"), ("saida", momento)]
+    desenhar_terminal(arquivo, linhas)
 
+
+def print_analise(arquivo: Path):
+    """Roda a análise de verdade (analise/analise_oat4.py) e desenha a saída numa janela de terminal."""
+    ambiente = {**os.environ, "PYTHONIOENCODING": "utf-8"}
+    execucao = subprocess.run([sys.executable, "-X", "utf8", "analise/analise_oat4.py"], cwd=PASTA_OAT4,
+                              capture_output=True, text=True, encoding="utf-8", env=ambiente)
+    if execucao.returncode != 0:
+        raise SystemExit(f"A análise falhou:\n{execucao.stderr}")
+    print(execucao.stdout)
+    momento = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    # A última linha traz o caminho absoluto da pasta: troca pelo relativo para não alargar o print.
+    saida = [l if not l.startswith("Tabelas e gráficos salvos em:") else "Tabelas e gráficos salvos em: resultados\\"
+             for l in execucao.stdout.rstrip().splitlines()]
+    linhas = [("prompt", f"PS {PASTA_OAT4}> py analise\\analise_oat4.py")] + [("saida", l) for l in saida]
+    linhas += [("saida", ""), ("prompt", f"PS {PASTA_OAT4}> Get-Date"), ("saida", momento)]
+    desenhar_terminal(arquivo, linhas, largura_min=0)
+
+
+def desenhar_terminal(arquivo: Path, linhas, largura_min=1500 * ESCALA):
+    """Janela de terminal (PowerShell) com as linhas dadas: ("prompt" | "saida", texto)."""
     mono = fonte("consola.ttf", 17 * ESCALA)
     altura_linha = 26 * ESCALA
-    largura = max(1500 * ESCALA // 2 * 2, max(int(mono.getlength(t)) for _, t in linhas) + 60 * ESCALA)
+    largura = max(largura_min, max(int(mono.getlength(t)) for _, t in linhas) + 60 * ESCALA)
     barra = 40 * ESCALA
     altura = barra + 24 * ESCALA + altura_linha * len(linhas) + 20 * ESCALA
     im = Image.new("RGB", (largura, altura), (12, 12, 12))
@@ -105,6 +131,10 @@ def print_terminal(arquivo: Path):
         cor = (97, 214, 214) if tipo == "prompt" else (204, 204, 204)
         if tipo == "saida" and " Up " in f" {texto} ":
             cor = (120, 220, 120)
+        elif tipo == "saida" and texto.startswith("==="):
+            cor = (249, 241, 165)   # títulos das tabelas em amarelo
+        elif tipo == "saida" and texto.strip().startswith("Random Forest"):
+            cor = (120, 220, 120)   # linha do modelo de ML em verde
         d.text((20 * ESCALA, y), texto, fill=cor, font=mono)
         y += altura_linha
     im.save(arquivo)
@@ -116,7 +146,14 @@ def main():
     parser.add_argument("--inicio", help='início do período nos dashboards (ex.: "2026-11-27 17:00")')
     parser.add_argument("--fim", help="fim do período (padrão: agora)")
     parser.add_argument("--tema", choices=["light", "dark"], default="light")
+    parser.add_argument("--analise", action="store_true",
+                        help="só roda a análise (depois da coleta) e gera analise_terminal.png")
     args = parser.parse_args()
+
+    if args.analise:
+        SAIDA.mkdir(parents=True, exist_ok=True)
+        print_analise(SAIDA / "analise_terminal.png")
+        return
 
     fim = datetime.fromisoformat(args.fim) if args.fim else datetime.now()
     inicio = datetime.fromisoformat(args.inicio) if args.inicio else fim - timedelta(hours=72)

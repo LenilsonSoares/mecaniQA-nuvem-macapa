@@ -548,6 +548,33 @@ def slide_resultado(s, r, serie):
     notas(s, f"Apresentador {'3' if serie == 'sucesso' else '4'} (60 s): " + fala)
 
 
+def slide_execucao(s, r):
+    titulo(s, "Análise executada")
+    # Print real do terminal (apresentacao/capturar_prints.py --analise), o mais alto possível.
+    imagem_ou_espaco(s, PRINTS / "analise_terminal.png", 0.3, 1.1, 6.4, 3.6,
+                     "print do terminal rodando analise_oat4.py  →  capturar_prints.py --analise")
+    if r["tem_metricas"]:
+        itens = []
+        for serie in ("sucesso", "erro"):
+            info = r[serie]
+            itens += [f"{serie.capitalize()}", f"melhor: {info['melhor_baseline']} · MAE {num(info['mae_baseline'])}",
+                      f"Random Forest: {info['posicao_rf']}º de 8 · MAE {num(info['mae_rf'])}", ""]
+    else:
+        itens = ["Sucesso", "melhor: [modelo] · MAE [x]", "Random Forest: [n]º de 8 · MAE [y]", "",
+                 "Erro", "melhor: [modelo] · MAE [x]", "Random Forest: [n]º de 8 · MAE [y]", ""]
+    tb = caixa(s, 6.85, 1.3, 2.95, 3.2, itens[:-1], tamanho=10, cor=PRETO, ancora=MSO_ANCHOR.MIDDLE)
+    for i, par in enumerate(tb.text_frame.paragraphs):
+        if i in (0, 4):
+            for run in par.runs:
+                run.font.bold = True
+                run.font.color.rgb = VERDE
+                run.font.size = Pt(14)
+    fonte(s, "Execução real de analise/analise_oat4.py sobre dados/serie_horaria.csv · partição P4 (72 h), ordenado por MAE")
+    notas(s, "Apresentador 4 (30 s): Este é o terminal com a análise rodando de verdade sobre os dados coletados. "
+             "O script lê a série horária, calcula os sete baselines e o Random Forest e imprime o ranking da "
+             "partição de 72 horas, para sucesso e para erro. As tabelas que mostramos saem desta execução.")
+
+
 def slide_features(s):
     titulo(s, "Feature engineering")
     grupos = [("Calendário", "hora e período do dia", "o tráfego segue o relógio"),
@@ -674,7 +701,8 @@ def main():
         lambda s: slide_dashboard(s, "sucesso"), lambda s: slide_dashboard(s, "erro"),
         lambda s: slide_coleta(s, resumo), slide_baselines, slide_particoes,
         lambda s: slide_resultado(s, resumo, "sucesso"), lambda s: slide_resultado(s, resumo, "erro"),
-        slide_features, lambda s: slide_modelo(s, resumo, "sucesso"), lambda s: slide_modelo(s, resumo, "erro"),
+        lambda s: slide_execucao(s, resumo), slide_features,
+        lambda s: slide_modelo(s, resumo, "sucesso"), lambda s: slide_modelo(s, resumo, "erro"),
         lambda s: slide_conclusao(s, resumo),
     ]
     for construir in construtores:

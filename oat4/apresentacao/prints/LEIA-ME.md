@@ -6,6 +6,8 @@ automaticamente, em alta resolução (2x) e sempre no mesmo padrão, por:
 ```powershell
 cd oat4
 py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # início das 72 h avaliadas
+py coleta/coletar_prometheus.py                                  # exporta a série horária
+py apresentacao/capturar_prints.py --analise                     # roda a análise + print do terminal
 py apresentacao/gerar_slides.py --pdf                            # coloca os prints nos slides
 ```
 
@@ -19,6 +21,7 @@ Opções: `--fim "AAAA-MM-DD HH:MM"` (padrão: agora) e `--tema dark` (padrão: 
 | `dashboard_sucesso.png` | Dashboard 1 | Grafana › *Requisições com Sucesso*, período da coleta, modo quiosque |
 | `dashboard_erro.png` | Dashboard 2 | Grafana › *Requisições com Erro*, período da coleta, modo quiosque |
 | `coleta_grafana_3dias.png` | Coleta | painéis "por hora" de sucesso e erro empilhados, período inteiro |
+| `analise_terminal.png` | Análise executada | terminal com a execução real de `analise/analise_oat4.py` (ranking P4) |
 
 Cada print do Grafana e do Prometheus leva uma faixa de legenda embaixo com a tela, o período
 e a hora da captura. Também dá para salvar prints manuais aqui com esses mesmos nomes
