@@ -314,10 +314,12 @@ def slide_capa(prs, capa):
             for r in ps[2].runs[1:]:
                 r._r.getparent().remove(r._r)
         elif texto.startswith("Autor:"):
-            # São cinco integrantes: "Autores".
-            for r in forma.text_frame.paragraphs[0].runs:
-                if r.text.startswith("Autor:"):
-                    r.text = r.text.replace("Autor:", "Autores:", 1)
+            autores = forma
+    # "Autores:" numa caixa e os nomes noutra, lado a lado: os 5 nomes ficam na mesma coluna.
+    x, y = autores.left.inches, autores.top.inches
+    autores._element.getparent().remove(autores._element)
+    caixa(capa, x, y, 1.0, 0.4, "Autores:", tamanho=12, negrito_primeira=True)
+    caixa(capa, x + 0.85, y, 4.5, 1.5, EQUIPE, tamanho=12)
     notas(capa, "Apresentador 1 — abertura (20 s): Boa noite, professor. Somos a equipe Macapá. "
                 "Nesta OAT 4 colocamos a API da MecâniQA sob observabilidade e criamos um motor que prevê "
                 "as requisições com sucesso e com erro da próxima hora.")
