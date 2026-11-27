@@ -417,14 +417,15 @@ def slide_arquitetura(s):
 
 def slide_ambiente(s):
     titulo(s, "Ambiente em funcionamento")
-    imagem_ou_espaco(s, PRINTS / "ambiente_docker.png", 0.45, 1.25, 4.45, 3.0,
+    # Prints largos e baixos: um embaixo do outro, quase na largura do slide, legenda à direita.
+    imagem_ou_espaco(s, PRINTS / "ambiente_docker.png", 0.3, 1.2, 7.5, 1.65,
                      "print do terminal: docker compose ps (4 serviços Up)  →  prints/ambiente_docker.png")
-    imagem_ou_espaco(s, PRINTS / "ambiente_targets.png", 5.1, 1.25, 4.45, 3.0,
+    imagem_ou_espaco(s, PRINTS / "ambiente_targets.png", 0.3, 3.0, 7.5, 1.65,
                      "print do Prometheus › Status › Targets (API UP)  →  prints/ambiente_targets.png")
-    caixa(s, 0.45, 4.3, 4.45, 0.35, "docker compose ps — api, prometheus, grafana e gerador Up", tamanho=10,
-          cor=VERDE, negrito_primeira=True, alinhar=PP_ALIGN.CENTER)
-    caixa(s, 5.1, 4.3, 4.45, 0.35, "Prometheus raspando a API a cada 5 s — alvo UP", tamanho=10,
-          cor=VERDE, negrito_primeira=True, alinhar=PP_ALIGN.CENTER)
+    caixa(s, 7.95, 1.2, 1.75, 1.65, ["Docker Compose", "api, gerador, prometheus e grafana: todos Up"],
+          tamanho=11, cor=VERDE, negrito_primeira=True, ancora=MSO_ANCHOR.MIDDLE)
+    caixa(s, 7.95, 3.0, 1.75, 1.65, ["Prometheus", "raspa a API a cada 5 s: alvo UP"],
+          tamanho=11, cor=VERDE, negrito_primeira=True, ancora=MSO_ANCHOR.MIDDLE)
     fonte(s, "Fonte: docker compose ps · http://localhost:9090/targets")
     notas(s, "Apresentador 2 (40 s): Subimos a pilha com docker compose: API, Prometheus, Grafana e o gerador de "
              "tráfego, os quatro ativos. No Prometheus, o alvo da API aparece como UP, ou seja, as métricas estão "

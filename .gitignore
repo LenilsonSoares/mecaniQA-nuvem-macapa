@@ -36,3 +36,10 @@ override.tf.json
 Thumbs.db
 *.log
 .pytest_cache/
+
+# Ambiente Python local da OAT 4
+.venv/
+
+# Prints da OAT 4: gerados na máquina da coleta e usados só nos slides
+/oat4/apresentacao/prints/*.png
+/oat4/apresentacao/prints/*.jpg

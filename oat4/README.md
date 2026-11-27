@@ -56,7 +56,7 @@ Deixe rodando **pelo menos 4 dias**: o primeiro dia é histórico (o lag de 24 h
 de 24 h precisam dele) e os **3 últimos dias são a janela avaliada**. Anote no grupo o
 horário de início e qualquer queda de energia.
 
-Durante a coleta, tire os prints dos dashboards **com data e hora visíveis**.
+Os prints saem prontos, em alta resolução e com data e hora na legenda (veja a seção 4).
 
 Ao final:
 
@@ -87,9 +87,15 @@ Saídas em `resultados/`:
 ## 4. Slides
 
 A apresentação segue o **Modelo de Apresentação da disciplina** (base: `docs/apresentacoes/mecaniQA_oat2_macapa.pptx`)
-e já tem os 16 slides, com roteiro de fala nas anotações de cada slide.
+e já tem os 17 slides, com roteiro de fala nas anotações de cada slide.
 
-1. Salve os prints do Grafana em `apresentacao/prints/` com os nomes do [LEIA-ME](apresentacao/prints/LEIA-ME.md).
+1. No fim da coleta, **com a pilha ainda rodando**, gere os prints (Docker, Prometheus e os 2 dashboards):
+   ```powershell
+   py -m pip install -r requirements.txt
+   py -m playwright install chromium
+   py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # início das 72 h avaliadas
+   ```
+   Eles vão para `apresentacao/prints/` com os nomes do [LEIA-ME](apresentacao/prints/LEIA-ME.md).
 2. Rode, na pasta `oat4/`:
    ```powershell
    py apresentacao/gerar_slides.py --pdf

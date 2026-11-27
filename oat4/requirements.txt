@@ -7,3 +7,6 @@ scikit-learn>=1.4
 # Geração dos slides (apresentacao/gerar_slides.py)
 python-pptx>=1.0
 Pillow>=10.0
+
+# Prints automáticos (apresentacao/capturar_prints.py); depois: py -m playwright install chromium
+playwright>=1.45

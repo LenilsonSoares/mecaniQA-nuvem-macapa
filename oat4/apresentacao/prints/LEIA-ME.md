@@ -1,18 +1,25 @@
 # Prints da apresentação (OAT 4)
 
-O professor valoriza **imagens grandes mostrando o que é real**. Salve aqui os prints com
-**exatamente** estes nomes (`.png` ou `.jpg`) e rode `py apresentacao/gerar_slides.py --pdf`
-na pasta `oat4/`. Cada um entra sozinho, grande, no slide certo.
+O professor valoriza **imagens grandes mostrando o que é real**. Os prints são gerados
+automaticamente, em alta resolução (2x) e sempre no mesmo padrão, por:
 
-| Arquivo | Slide | O que capturar |
+```powershell
+cd oat4
+py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # início das 72 h avaliadas
+py apresentacao/gerar_slides.py --pdf                            # coloca os prints nos slides
+```
+
+Rode **no fim da coleta, com a pilha ainda no ar** (`docker compose ps` com os 4 serviços Up).
+Opções: `--fim "AAAA-MM-DD HH:MM"` (padrão: agora) e `--tema dark` (padrão: claro).
+
+| Arquivo | Slide | Conteúdo |
 | --- | --- | --- |
-| `ambiente_docker.png` | 5 — Ambiente | Terminal com `docker compose ps` mostrando os 4 serviços **Up** (api, prometheus, grafana, gerador) |
-| `ambiente_targets.png` | 5 — Ambiente | http://localhost:9090/targets com `mecaniqa-django-api` **UP** |
-| `dashboard_sucesso.png` | 6 — Dashboard 1 | Grafana › MecaniQA › *Requisições com Sucesso*, "Last 3 days", **data e hora visíveis** |
-| `dashboard_erro.png` | 7 — Dashboard 2 | Grafana › MecaniQA › *Requisições com Erro*, "Last 3 days", **data e hora visíveis** |
+| `ambiente_docker.png` | Ambiente | saída real de `docker compose ps` (api, gerador, prometheus, grafana **Up**) + data e hora |
+| `ambiente_targets.png` | Ambiente | Prometheus › Targets com `mecaniqa-django-api` **UP** |
+| `dashboard_sucesso.png` | Dashboard 1 | Grafana › *Requisições com Sucesso*, período da coleta, modo quiosque |
+| `dashboard_erro.png` | Dashboard 2 | Grafana › *Requisições com Erro*, período da coleta, modo quiosque |
+| `coleta_grafana_3dias.png` | Coleta | painéis "por hora" de sucesso e erro empilhados, período inteiro |
 
-Dicas para ficarem nítidos:
-- Navegador em tela cheia (F11), zoom 100%; recorte só a área útil (sem barra de tarefas).
-- Dashboards no **mesmo tema** (claro ou escuro) e tirados **no fim da coleta**, com os 3 dias inteiros.
-- Terminal com fonte grande (Ctrl + roda do mouse) antes do print.
-- Os gráficos e tabelas dos outros slides vêm de `oat4/resultados/` (gerados por `analise/analise_oat4.py`).
+Cada print do Grafana e do Prometheus leva uma faixa de legenda embaixo com a tela, o período
+e a hora da captura. Também dá para salvar prints manuais aqui com esses mesmos nomes
+(`.png` ou `.jpg`). Os PNGs não vão para o Git; o entregável é o PDF dos slides.
