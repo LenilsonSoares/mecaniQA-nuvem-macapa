@@ -239,12 +239,15 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "decimals": 0,
           "custom": {
             "drawStyle": "bars",
             "lineWidth": 2,
             "fillOpacity": 25,
             "showPoints": "never"
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
           }
         },
         "overrides": []
@@ -289,12 +292,15 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "decimals": 0,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 2,
             "fillOpacity": 25,
             "showPoints": "never"
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
           }
         },
         "overrides": []
@@ -340,7 +346,6 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "decimals": 0,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 2,
