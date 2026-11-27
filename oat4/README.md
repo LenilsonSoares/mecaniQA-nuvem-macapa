@@ -19,6 +19,7 @@ oat4/
 │   └── docker-compose.yml # + serviço "gerador" com reinício automático
 ├── coleta/coletar_prometheus.py   # exporta a série horária do Prometheus para CSV
 ├── analise/analise_oat4.py        # 7 baselines × 4 partições (MAE/MSE) + Random Forest
+├── apresentacao/          # gerador dos slides no modelo da disciplina + prints/
 ├── dados/                 # serie_horaria.csv (gerado pela coleta)
 ├── resultados/            # tabelas e gráficos para os slides (gerados pela análise)
 └── requirements.txt       # dependências da análise
@@ -82,6 +83,22 @@ Saídas em `resultados/`:
 | `04_evolucao_mae_*.png` | evolução do erro conforme cresce o histórico |
 | `05_importancia_features_*.png` | feature engineering |
 | `metricas_todas.csv`, `previsoes_*.csv` | números completos |
+
+## 4. Slides
+
+A apresentação segue o **Modelo de Apresentação da disciplina** (base: `docs/apresentacoes/mecaniQA_oat2_macapa.pptx`)
+e já tem os 16 slides, com roteiro de fala nas anotações de cada slide.
+
+1. Salve os prints do Grafana em `apresentacao/prints/` com os nomes do [LEIA-ME](apresentacao/prints/LEIA-ME.md).
+2. Rode, na pasta `oat4/`:
+   ```powershell
+   py apresentacao/gerar_slides.py --pdf
+   ```
+   Gráficos, tabelas de MAE/MSE e números (período, totais, melhor modelo) entram sozinhos.
+3. Abra `apresentacao/mecaniQA_oat4_macapa.pptx` no **Google Slides** (fonte Poppins do modelo), revise e baixe o PDF
+   como **`mecaniQA_oat4_macapa.pdf`**. Envie nos **dois** Blackboards (ML e Nuvem).
+
+Enquanto não houver coleta, o PDF sai como `mecaniQA_oat4_macapa_RASCUNHO.pdf`, com espaços marcados "⟶ INSERIR".
 
 ## Protocolo de avaliação
 

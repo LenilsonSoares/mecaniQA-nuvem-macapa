@@ -3,3 +3,7 @@ pandas>=2.2
 matplotlib>=3.8
 # scikit-learn >= 1.4: Random Forest aceita NaN nas features (horas iniciais sem lag 24 h)
 scikit-learn>=1.4
+
+# Geração dos slides (apresentacao/gerar_slides.py)
+python-pptx>=1.0
+Pillow>=10.0

@@ -27,6 +27,9 @@ import matplotlib
 
 matplotlib.use("Agg")  # gera arquivos PNG sem abrir janela
 import matplotlib.pyplot as plt
+
+# Fontes maiores: os gráficos vão para slides e precisam ser legíveis de longe.
+plt.rcParams.update({"font.size": 14, "axes.titlesize": 15, "axes.labelsize": 13, "legend.fontsize": 12})
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -141,7 +144,7 @@ def avaliar_particoes(real: pd.Series, previsoes: pd.DataFrame, inicio_janela: i
 
 # ------------------------------------------------------------------------ gráficos
 def grafico_serie(dados: pd.DataFrame, inicio_janela: int, pasta: Path) -> None:
-    fig, eixos = plt.subplots(2, 1, figsize=(13, 7), sharex=True)
+    fig, eixos = plt.subplots(1, 2, figsize=(16, 4.4))
     for eixo, (coluna, titulo) in zip(eixos, SERIES.items()):
         eixo.plot(dados.index, dados[coluna], color="black", linewidth=1.4)
         eixo.axvspan(dados.index[0], dados.index[inicio_janela - 1], color="grey", alpha=0.15,
@@ -150,27 +153,30 @@ def grafico_serie(dados: pd.DataFrame, inicio_janela: int, pasta: Path) -> None:
         eixo.set_ylabel("requisições/hora")
         eixo.grid(alpha=0.25)
         eixo.legend(loc="upper left")
+        eixo.tick_params(axis="x", rotation=30)
     fig.suptitle("Série horária coletada do Prometheus")
-    fig.autofmt_xdate()
     fig.tight_layout()
-    fig.savefig(pasta / "01_serie_coletada.png", dpi=160)
+    fig.savefig(pasta / "01_serie_coletada.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 
 
 def grafico_heatmap(tabela: pd.DataFrame, metrica: str, serie: str, pasta: Path) -> None:
     matriz = tabela.pivot(index="modelo", columns="particao", values=metrica)[list(PARTICOES)]
     matriz = matriz.loc[matriz[list(PARTICOES)[-1]].sort_values().index]
-    fig, eixo = plt.subplots(figsize=(8, 5))
+    fig, eixo = plt.subplots(figsize=(7.5, 6))
     imagem = eixo.imshow(matriz.values, cmap="RdYlGn_r", aspect="auto")
     eixo.set_xticks(range(len(matriz.columns)), matriz.columns)
     eixo.set_yticks(range(len(matriz.index)), matriz.index)
     for i in range(matriz.shape[0]):
         for j in range(matriz.shape[1]):
-            eixo.text(j, i, f"{matriz.values[i, j]:.1f}", ha="center", va="center", fontsize=9)
-    eixo.set_title(f"{metrica} por modelo e partição — {SERIES[serie]}\n(menor é melhor)")
+            valor = matriz.values[i, j]
+            # MSE tem valores grandes: mostra em milhares (k) para caber na célula.
+            rotulo = f"{valor / 1000:.0f}k" if valor >= 10_000 else f"{valor:.1f}"
+            eixo.text(j, i, rotulo, ha="center", va="center", fontsize=13)
+    eixo.set_title(f"{metrica} por partição — {serie} (menor é melhor)")
     fig.colorbar(imagem, ax=eixo, shrink=0.8)
     fig.tight_layout()
-    fig.savefig(pasta / f"02_heatmap_{metrica.lower()}_{serie}.png", dpi=160)
+    fig.savefig(pasta / f"02_heatmap_{metrica.lower()}_{serie}.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -179,44 +185,44 @@ def grafico_previsoes(real: pd.Series, previsoes: pd.DataFrame, tabela: pd.DataF
     final = tabela[tabela["particao"] == list(PARTICOES)[-1]]
     melhor_baseline = final[final["modelo"] != NOME_RF].sort_values("MAE")["modelo"].iloc[0]
     janela = slice(inicio_janela, None)
-    fig, eixo = plt.subplots(figsize=(13, 5))
+    fig, eixo = plt.subplots(figsize=(14, 3.9))
     eixo.plot(real.index[janela], real.iloc[janela], color="black", linewidth=2, label="Real")
     eixo.plot(real.index[janela], previsoes[melhor_baseline].iloc[janela], "--", label=f"Melhor baseline: {melhor_baseline}")
     eixo.plot(real.index[janela], previsoes[NOME_RF].iloc[janela], label=NOME_RF)
     for horas in list(PARTICOES.values())[:-1]:
         eixo.axvline(real.index[inicio_janela + horas], color="grey", linestyle=":", linewidth=1)
-    eixo.set_title(f"{SERIES[serie]} — real × previsões nas 72 h avaliadas (linhas pontilhadas = partições)")
+    eixo.set_title(f"{SERIES[serie]}: real × previsões nas 72 h (pontilhado = partições)")
     eixo.set_ylabel("requisições/hora")
     eixo.legend()
     eixo.grid(alpha=0.25)
     fig.autofmt_xdate()
     fig.tight_layout()
-    fig.savefig(pasta / f"03_previsoes_{serie}.png", dpi=160)
+    fig.savefig(pasta / f"03_previsoes_{serie}.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 
 
 def grafico_evolucao(tabela: pd.DataFrame, serie: str, pasta: Path) -> None:
-    fig, eixo = plt.subplots(figsize=(9, 5))
+    fig, eixo = plt.subplots(figsize=(14, 3.9))
     for modelo, grupo in tabela.groupby("modelo", sort=False):
         estilo = dict(linewidth=3, color="black") if modelo == NOME_RF else dict(linewidth=1.2, alpha=0.8)
         eixo.plot(grupo["particao"], grupo["MAE"], marker="o", label=modelo, **estilo)
-    eixo.set_title(f"Evolução do MAE conforme cresce o histórico — {SERIES[serie]}")
+    eixo.set_title(f"MAE conforme cresce o histórico — {serie}")
     eixo.set_ylabel("MAE (requisições/hora)")
-    eixo.legend(fontsize=8, ncol=2)
+    eixo.legend(fontsize=10, ncol=2, loc="center left", bbox_to_anchor=(1.01, 0.5))
     eixo.grid(alpha=0.25)
     fig.tight_layout()
-    fig.savefig(pasta / f"04_evolucao_mae_{serie}.png", dpi=160)
+    fig.savefig(pasta / f"04_evolucao_mae_{serie}.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 
 
 def grafico_importancias(importancias: pd.Series, serie: str, pasta: Path) -> None:
-    top = importancias.head(10).iloc[::-1]
-    fig, eixo = plt.subplots(figsize=(8, 5))
+    top = importancias.head(6).iloc[::-1]
+    fig, eixo = plt.subplots(figsize=(11, 3.8))
     eixo.barh(top.index, top.values)
-    eixo.set_title(f"Features mais importantes do Random Forest — {SERIES[serie]}")
+    eixo.set_title(f"Features mais importantes do Random Forest — {serie}")
     eixo.set_xlabel("importância (redução de impureza)")
     fig.tight_layout()
-    fig.savefig(pasta / f"05_importancia_features_{serie}.png", dpi=160)
+    fig.savefig(pasta / f"05_importancia_features_{serie}.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 
 
