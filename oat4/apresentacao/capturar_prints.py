@@ -58,17 +58,30 @@ def legenda(imagem: Path, texto: str, tema: str):
     nova.save(imagem)
 
 
-def capturar(pagina, url, arquivo, largura, altura, espera_ms=5000):
+def aparar_base(arquivo: Path, margem=12 * ESCALA):
+    """Corta a faixa vazia no pé da imagem (cor de fundo da última linha), mantendo uma margem."""
+    im = Image.open(arquivo).convert("RGB")
+    fundo = im.getpixel((im.width // 2, im.height - 1))
+    y = im.height - 1
+    while y > 0 and all(abs(a - b) <= 3 for px in (im.getpixel((x, y)) for x in range(0, im.width, 8))
+                        for a, b in zip(px, fundo)):
+        y -= 1
+    im.crop((0, 0, im.width, min(im.height, y + 1 + margem))).save(arquivo)
+
+
+def capturar(pagina, url, arquivo, largura, altura, espera_ms=5000, aparar=False):
     pagina.set_viewport_size({"width": largura, "height": altura})
     pagina.goto(url, wait_until="networkidle")
     pagina.wait_for_timeout(espera_ms)  # painéis terminam de desenhar após a resposta
     pagina.screenshot(path=str(arquivo))
+    if aparar:
+        aparar_base(arquivo)
     print("  ✓", arquivo.name)
 
 
 def print_terminal(arquivo: Path):
     """Desenha a saída real de `docker compose ps` numa janela de terminal."""
-    comando = ["docker", "compose", "ps", "--format", "table {{.Service}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"]
+    comando = ["docker", "compose", "ps", "--format", "table {{.Service}}\t{{.Name}}\t{{.Status}}\t{{.Ports}}"]
     saida = subprocess.run(comando, cwd=PILHA, capture_output=True, text=True, check=True).stdout.rstrip()
     momento = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     linhas = [("prompt", f"PS {PILHA}> docker compose ps")] + [("saida", l) for l in saida.splitlines()]
@@ -127,7 +140,8 @@ def main():
         for nome, uid in DASHBOARDS.items():
             arquivo = SAIDA / f"dashboard_{nome}.png"
             url = f"{GRAFANA}/d/{uid}?orgId=1&from={de}&to={ate}&theme={args.tema}&kiosk"
-            capturar(pagina, url, arquivo, 1600, 900)
+            # Formato largo para ocupar a largura inteira do slide; a altura sobra e o pé vazio é recortado.
+            capturar(pagina, url, arquivo, 2300, 1100, aparar=True)
             legenda(arquivo, f"Grafana › MecâniQA › Requisições com {'Sucesso (2xx)' if nome == 'sucesso' else 'Erro (4xx/5xx)'}"
                              f" · {periodo} · {capturado}", args.tema)
 
@@ -136,7 +150,7 @@ def main():
         for nome, uid in DASHBOARDS.items():
             parte = SAIDA / f"_painel_{nome}.png"
             url = f"{GRAFANA}/d-solo/{uid}?orgId=1&panelId={PAINEL_POR_HORA}&from={de}&to={ate}&theme={args.tema}"
-            capturar(pagina, url, parte, 1600, 380)
+            capturar(pagina, url, parte, 2400, 330)  # dois empilhados ≈ 3,5:1, a área do slide de coleta
             partes.append(Image.open(parte).convert("RGB"))
         navegador.close()
 
