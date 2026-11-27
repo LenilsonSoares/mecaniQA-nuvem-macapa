@@ -182,7 +182,7 @@ def grafico_heatmap(tabela: pd.DataFrame, metrica: str, serie: str, pasta: Path)
             # MSE tem valores grandes: mostra em milhares (k) para caber na célula.
             rotulo = f"{valor / 1000:.0f}k" if valor >= 10_000 else f"{valor:.1f}"
             eixo.text(j, i, rotulo, ha="center", va="center", fontsize=13)
-    eixo.set_title(f"{metrica} por partição — {serie} (menor é melhor)")
+    eixo.set_title(f"{metrica} por partição: {serie} (menor é melhor)")
     fig.colorbar(imagem, ax=eixo, shrink=0.8)
     fig.tight_layout()
     fig.savefig(pasta / f"02_heatmap_{metrica.lower()}_{serie}.png", dpi=160, bbox_inches="tight")
@@ -215,7 +215,7 @@ def grafico_evolucao(tabela: pd.DataFrame, serie: str, pasta: Path) -> None:
     for modelo, grupo in tabela.groupby("modelo", sort=False):
         estilo = dict(linewidth=3, color="black") if modelo == NOME_RF else dict(linewidth=1.2, alpha=0.8)
         eixo.plot(grupo["particao"], grupo["MAE"], marker="o", label=modelo, **estilo)
-    eixo.set_title(f"MAE conforme cresce o histórico — {serie}")
+    eixo.set_title(f"MAE conforme cresce o histórico: {serie}")
     eixo.set_ylabel("MAE (requisições/hora)")
     eixo.legend(fontsize=10, ncol=2, loc="center left", bbox_to_anchor=(1.01, 0.5))
     eixo.grid(alpha=0.25)
@@ -228,7 +228,7 @@ def grafico_importancias(importancias: pd.Series, serie: str, pasta: Path) -> No
     top = importancias.head(6).iloc[::-1]
     fig, eixo = plt.subplots(figsize=(11, 3.8))
     eixo.barh(top.index, top.values)
-    eixo.set_title(f"Features mais importantes do Random Forest — {serie}")
+    eixo.set_title(f"Features mais importantes do Random Forest: {serie}")
     eixo.set_xlabel("importância (redução de impureza)")
     fig.tight_layout()
     fig.savefig(pasta / f"05_importancia_features_{serie}.png", dpi=160, bbox_inches="tight")
@@ -276,7 +276,7 @@ def main() -> None:
         )
 
         final = tabela[tabela["particao"] == list(PARTICOES)[-1]].sort_values("MAE")
-        print(f"\n=== {SERIES[serie]} — partição P4 (72 h), ordenado por MAE ===")
+        print(f"\n=== {SERIES[serie]}: partição P4 (72 h), ordenado por MAE ===")
         print(final[["modelo", "MAE", "MSE"]].round(2).to_string(index=False))
 
     pd.concat(todas).round(4).to_csv(args.saida / "metricas_todas.csv", index=False, encoding="utf-8-sig")

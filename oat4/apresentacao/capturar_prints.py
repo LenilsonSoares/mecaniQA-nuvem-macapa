@@ -84,8 +84,38 @@ def capturar(pagina, url, arquivo, largura, altura, espera_ms=5000, aparar=False
     print("  ✓", arquivo.name)
 
 
+def janela_real(arquivo: Path, pasta: Path, comandos: list[str], colunas: int, linhas: int, fonte_px: int,
+                tempo_max=900) -> bool:
+    """Abre uma janela de verdade do Windows PowerShell, roda os comandos e fotografa só essa janela.
+
+    Usa apresentacao/janela_terminal.ps1 (conhost + PrintWindow). Devolve False fora do Windows
+    ou se a captura falhar; aí quem chamou desenha a saída como alternativa.
+    """
+    if not sys.platform.startswith("win"):
+        return False
+    script = Path(__file__).with_name("janela_terminal.ps1")
+    arquivo.unlink(missing_ok=True)
+    try:
+        processo = subprocess.Popen(
+            ["conhost.exe", "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script),
+             "-Pasta", str(pasta), "-Arquivo", str(arquivo), "-Comandos", "||".join(comandos),
+             "-Colunas", str(colunas), "-Linhas", str(linhas), "-Fonte", str(fonte_px)],
+            creationflags=subprocess.CREATE_NEW_CONSOLE)
+        processo.wait(timeout=tempo_max)
+    except (OSError, subprocess.TimeoutExpired) as erro:
+        print(f"  ! janela real falhou ({erro}); desenhando a saída")
+        return False
+    if not arquivo.is_file():
+        return False
+    print("  ✓", arquivo.name, "(janela real do PowerShell)")
+    return True
+
+
 def print_terminal(arquivo: Path):
-    """Desenha a saída real de `docker compose ps` numa janela de terminal."""
+    """Print de `docker compose ps` + Get-Date: janela real; se não der, desenha a saída real."""
+    formato = "table {{.Service}}\\t{{.Status}}\\t{{.Ports}}"
+    if janela_real(arquivo, PILHA, [f'docker compose ps --format "{formato}"', "Get-Date"], 160, 13, 18):
+        return
     comando = ["docker", "compose", "ps", "--format", "table {{.Service}}\t{{.Name}}\t{{.Status}}\t{{.Ports}}"]
     saida = subprocess.run(comando, cwd=PILHA, capture_output=True, text=True, check=True).stdout.rstrip()
     momento = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -95,7 +125,20 @@ def print_terminal(arquivo: Path):
 
 
 def print_analise(arquivo: Path):
-    """Roda a análise de verdade (analise/analise_oat4.py) e desenha a saída numa janela de terminal."""
+    """Roda a análise de verdade (analise/analise_oat4.py) numa janela real do PowerShell e fotografa.
+
+    Se a janela real não der certo (ou a análise falhar lá dentro), roda aqui e desenha a saída.
+    """
+    metricas = PASTA_OAT4 / "resultados" / "metricas_todas.csv"
+    antes = metricas.stat().st_mtime if metricas.is_file() else 0
+    python_venv = Path(sys.executable)
+    try:
+        comando = f"{python_venv.relative_to(PASTA_OAT4)} analise\\analise_oat4.py"
+    except ValueError:  # Python fora da pasta oat4 (sem .venv): usa o caminho completo
+        comando = f'& "{python_venv}" analise\\analise_oat4.py'
+    if (janela_real(arquivo, PASTA_OAT4, [comando, "Get-Date"], 118, 36, 18)
+            and metricas.is_file() and metricas.stat().st_mtime > antes):
+        return
     ambiente = {**os.environ, "PYTHONIOENCODING": "utf-8"}
     execucao = subprocess.run([sys.executable, "-X", "utf8", "analise/analise_oat4.py"], cwd=PASTA_OAT4,
                               capture_output=True, text=True, encoding="utf-8", env=ambiente)
@@ -158,7 +201,7 @@ def main():
     fim = datetime.fromisoformat(args.fim) if args.fim else datetime.now()
     inicio = datetime.fromisoformat(args.inicio) if args.inicio else fim - timedelta(hours=72)
     de, ate = int(inicio.timestamp() * 1000), int(fim.timestamp() * 1000)
-    periodo = f"{inicio:%d/%m/%Y %H:%M} → {fim:%d/%m/%Y %H:%M} (UTC-3)"
+    periodo = f"{inicio:%d/%m/%Y %H:%M} a {fim:%d/%m/%Y %H:%M} (UTC-3)"
     capturado = f"capturado em {datetime.now():%d/%m/%Y %H:%M}"
     SAIDA.mkdir(parents=True, exist_ok=True)
     print(f"Período: {periodo}")
@@ -172,15 +215,15 @@ def main():
 
         alvo = SAIDA / "ambiente_targets.png"
         capturar(pagina, f"{PROMETHEUS}/targets", alvo, 1500, 300, espera_ms=2500)
-        legenda(alvo, f"Prometheus › Status › Targets · {capturado}", "light")
+        legenda(alvo, f"Prometheus > Status > Targets  |  {capturado}", "light")
 
         for nome, uid in DASHBOARDS.items():
             arquivo = SAIDA / f"dashboard_{nome}.png"
             url = f"{GRAFANA}/d/{uid}?orgId=1&from={de}&to={ate}&theme={args.tema}&kiosk"
             # Formato largo para ocupar a largura inteira do slide; a altura sobra e o pé vazio é recortado.
             capturar(pagina, url, arquivo, 2300, 1100, aparar=True)
-            legenda(arquivo, f"Grafana › MecâniQA › Requisições com {'Sucesso (2xx)' if nome == 'sucesso' else 'Erro (4xx/5xx)'}"
-                             f" · {periodo} · {capturado}", args.tema)
+            legenda(arquivo, f"Grafana > MecâniQA > Requisições com {'Sucesso (2xx)' if nome == 'sucesso' else 'Erro (4xx/5xx)'}"
+                             f"  |  {periodo}  |  {capturado}", args.tema)
 
         # Coleta: os dois painéis "por hora", empilhados numa imagem só.
         partes = []
@@ -200,7 +243,7 @@ def main():
     junta.save(coleta)
     for temporario in SAIDA.glob("_painel_*.png"):
         temporario.unlink()
-    legenda(coleta, f"Grafana › MecâniQA · sucesso e erro por hora · {periodo} · {capturado}", args.tema)
+    legenda(coleta, f"Grafana > MecâniQA > sucesso e erro por hora  |  {periodo}  |  {capturado}", args.tema)
     print("  ✓", coleta.name)
     print(f"Prints salvos em {SAIDA}. Rode apresentacao/gerar_slides.py --pdf para colocá-los nos slides.")
 

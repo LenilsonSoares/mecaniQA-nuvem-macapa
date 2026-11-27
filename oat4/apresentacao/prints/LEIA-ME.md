@@ -16,13 +16,15 @@ Opções: `--fim "AAAA-MM-DD HH:MM"` (padrão: agora) e `--tema dark` (padrão: 
 
 | Arquivo | Slide | Conteúdo |
 | --- | --- | --- |
-| `ambiente_docker.png` | Ambiente | saída real de `docker compose ps` (api, gerador, prometheus, grafana **Up**) + data e hora |
+| `ambiente_docker.png` | Ambiente | janela real do Windows PowerShell com `docker compose ps` (4 serviços **Up**) e `Get-Date` |
 | `ambiente_targets.png` | Ambiente | Prometheus › Targets com `mecaniqa-django-api` **UP** |
 | `dashboard_sucesso.png` | Dashboard 1 | Grafana › *Requisições com Sucesso*, período da coleta, modo quiosque |
 | `dashboard_erro.png` | Dashboard 2 | Grafana › *Requisições com Erro*, período da coleta, modo quiosque |
 | `coleta_grafana_3dias.png` | Coleta | painéis "por hora" de sucesso e erro empilhados, período inteiro |
-| `analise_terminal.png` | Análise executada | terminal com a execução real de `analise/analise_oat4.py` (ranking P4) |
+| `analise_terminal.png` | Análise executada | janela real do Windows PowerShell rodando `analise/analise_oat4.py` (ranking P4) e `Get-Date` |
 
-Cada print do Grafana e do Prometheus leva uma faixa de legenda embaixo com a tela, o período
+Os dois terminais são janelas de verdade do Windows PowerShell, abertas e fotografadas por
+`apresentacao/janela_terminal.ps1` (fora do Windows, a saída real é desenhada). Cada print do
+Grafana e do Prometheus leva uma faixa de legenda embaixo com a tela, o período
 e a hora da captura. Também dá para salvar prints manuais aqui com esses mesmos nomes
 (`.png` ou `.jpg`). Os PNGs não vão para o Git; o entregável é o PDF dos slides.
