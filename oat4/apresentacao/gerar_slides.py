@@ -271,6 +271,10 @@ def carregar_resumo():
                 "mae_rf": rf["MAE"], "rf_venceu": rf["MAE"] < base.iloc[0]["MAE"],
                 "pior_baseline": base.iloc[-1]["modelo"], "mae_pior": base.iloc[-1]["MAE"],
             }
+            arquivo_imp = RESULTADOS / f"importancia_features_{serie}.csv"
+            if arquivo_imp.is_file():
+                imp = pd.read_csv(arquivo_imp, index_col=0).iloc[:, 0]
+                resumo[serie]["top_features"] = list(imp.index[:2])
     return resumo
 
 
@@ -574,11 +578,12 @@ def slide_conclusao(s, r):
         achados = [f"Sucesso: melhor baseline {su['melhor_baseline']} (MAE {num(su['mae_baseline'])}); "
                    f"RF {num(su['mae_rf'])}.",
                    f"Erro: melhor baseline {er['melhor_baseline']} (MAE {num(er['mae_baseline'])}); RF {num(er['mae_rf'])}.",
-                   "O ciclo diário domina o tráfego: hora do dia e lag de 24 h são as pistas mais fortes."]
+                   "Features mais importantes do RF (sucesso): "
+                   + (" e ".join(su.get("top_features", [])) or "ver gráfico de importância") + "."]
     else:
         achados = ["Sucesso: melhor baseline [modelo] (MAE [x]); RF [y].",
                    "Erro: melhor baseline [modelo] (MAE [x]); RF [y].",
-                   "O ciclo diário domina o tráfego: hora do dia e lag de 24 h são as pistas mais fortes."]
+                   "Features mais importantes do RF (sucesso): [feature 1] e [feature 2]."]
     cartao(s, 0.45, 1.3, 4.45, 2.15, "O que aprendemos", achados, fundo=VERDE_CLARO, cor_titulo=VERDE, tam_corpo=10)
     cartao(s, 5.1, 1.3, 4.45, 2.15, "Limites e próximos passos",
            ["Só 3 dias: cada hora do dia aparece poucas vezes para o modelo aprender.",
