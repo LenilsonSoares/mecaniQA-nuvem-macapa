@@ -49,6 +49,8 @@ app-monitoring/
 
 ## Como Executar
 
+> **Equipe Macapá:** nesta cópia o gerador de tráfego já roda como serviço `gerador` do `docker-compose.yml`. Use apenas `docker compose up -d --build`; **não** rode `scripts/gerar_trafego.py` no terminal (dobraria o tráfego). Passo a passo completo em [`../README.md`](../README.md).
+
 ### Opção 1 — Script único (recomendado)
 ```bash
 chmod +x run.sh

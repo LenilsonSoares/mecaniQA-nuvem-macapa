@@ -52,8 +52,10 @@ echo "  - Métricas Prometheus:    http://localhost:8000/metrics"
 echo "  - Prometheus UI:          http://localhost:9090"
 echo "  - Grafana UI:             http://localhost:3000  (usuário: admin | senha: admin)"
 echo ""
-echo "[3/3] Iniciando gerador contínuo de tráfego (2xx, 4xx e 5xx)..."
-echo "      (Pressione Ctrl+C para parar o gerador; os containers continuarão rodando.)"
+echo "[3/3] Gerador de tráfego rodando no container \"gerador\" (logs abaixo)..."
+echo "      (Ctrl+C só fecha os logs; a coleta continua rodando nos containers.)"
 echo ""
 
-python3 scripts/gerar_trafego.py --url http://localhost:8000
+# Equipe Macapá: o gerador já roda como serviço "gerador" no docker-compose.
+# Não inicie outro aqui (dobraria o tráfego e usaria o fuso do host).
+docker compose logs -f gerador

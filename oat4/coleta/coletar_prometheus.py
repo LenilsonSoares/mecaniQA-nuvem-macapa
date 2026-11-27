@@ -1,7 +1,9 @@
 """Exporta do Prometheus a série horária de requisições com sucesso e com erro (OAT 4).
 
-Cada linha do CSV representa uma hora cheia: o valor é o número de requisições
-contadas naquela hora (``increase`` do contador no intervalo de 1 h).
+Cada linha do CSV representa uma hora cheia, rotulada pelo seu INÍCIO: a linha
+"10:00" conta as requisições entre 10:00 e 11:00 (``increase`` do contador em 1 h).
+Horas em que o Prometheus raspou a API menos de 90% do tempo (máquina parada,
+queda de energia) saem vazias, para não parecerem horas de pouco tráfego.
 
 Uso (com a pilha da pasta app-monitoring rodando):
     py coletar_prometheus.py                 # últimas 96 h até a última hora cheia
@@ -28,6 +30,11 @@ CONSULTAS = {
     "sucesso": "sum(increase(mecaniqa_api_requests_success_total[1h]))",
     "erro": "sum(increase(mecaniqa_api_requests_error_total[1h]))",
 }
+
+# Raspagem a cada 5 s → 720 amostras por hora; abaixo de 90% a hora é considerada sem dado.
+AMOSTRAS_POR_HORA = 3600 // 5
+COBERTURA_MINIMA = 0.9
+CONSULTA_COBERTURA = 'count_over_time(up{job="mecaniqa-django-api"}[1h])'
 
 PASTA_OAT4 = Path(__file__).resolve().parents[1]
 SAIDA_PADRAO = PASTA_OAT4 / "dados" / "serie_horaria.csv"
@@ -75,16 +82,21 @@ def main() -> int:
     inicio = fim - timedelta(hours=args.horas - 1)
 
     series = {nome: consultar_intervalo(args.prometheus, q, inicio, fim) for nome, q in CONSULTAS.items()}
+    cobertura = consultar_intervalo(args.prometheus, CONSULTA_COBERTURA, inicio, fim)
 
     linhas, faltantes = [], []
     instante = inicio
     while instante <= fim:
         ts = int(instante.timestamp())
         valores = {nome: series[nome].get(ts) for nome in CONSULTAS}
+        # O ponto em T resume a hora (T-1h, T]: rotulamos pelo início dessa hora.
+        inicio_da_hora = instante - timedelta(hours=1)
+        if cobertura.get(ts, 0) < COBERTURA_MINIMA * AMOSTRAS_POR_HORA:
+            valores = {nome: None for nome in CONSULTAS}
         if any(v is None for v in valores.values()):
-            faltantes.append(instante)
+            faltantes.append(inicio_da_hora)
         linhas.append({
-            "timestamp": instante.astimezone(FUSO_LOCAL).strftime("%Y-%m-%d %H:%M"),
+            "timestamp": inicio_da_hora.astimezone(FUSO_LOCAL).strftime("%Y-%m-%d %H:%M"),
             # increase() extrapola e pode gerar decimais; arredondamos para contagem inteira.
             **{nome: ("" if v is None else round(v)) for nome, v in valores.items()},
         })
@@ -96,7 +108,7 @@ def main() -> int:
         escritor.writeheader()
         escritor.writerows(linhas)
 
-    print(f"Período: {inicio:%d/%m/%Y %H:%M} até {fim:%d/%m/%Y %H:%M} (UTC-3)")
+    print(f"Período coberto: {inicio - timedelta(hours=1):%d/%m/%Y %H:%M} até {fim:%d/%m/%Y %H:%M} (UTC-3)")
     print(f"Horas exportadas: {len(linhas)} | arquivo: {args.saida}")
     if faltantes:
         print(f"ATENÇÃO: {len(faltantes)} hora(s) sem dado (coleta parada?). Primeira: {faltantes[0]:%d/%m %H:%M}.")

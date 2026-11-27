@@ -56,16 +56,21 @@ def carregar_serie(caminho: Path) -> pd.DataFrame:
     # Reindexa hora a hora: buracos de coleta (queda de energia) viram NaN explícitos.
     completo = pd.date_range(dados.index.min(), dados.index.max(), freq="h")
     dados = dados.reindex(completo).rename_axis("timestamp")
-    faltantes = int(dados[list(SERIES)].isna().any(axis=1).sum())
+    # Horas sem dado ficam marcadas: não entram nas métricas nem no treino do modelo.
+    dados["sem_dado"] = dados[list(SERIES)].isna().any(axis=1)
+    faltantes = int(dados["sem_dado"].sum())
     if faltantes:
-        print(f"Aviso: {faltantes} hora(s) sem dado; preenchidas por interpolação linear no tempo.")
-        dados[list(SERIES)] = dados[list(SERIES)].interpolate(method="time", limit_direction="both")
+        print(f"Aviso: {faltantes} hora(s) sem dado; preenchidas com a última hora conhecida (só o passado) "
+              "e excluídas das métricas.")
+        # ffill usa apenas o passado; interpolar usaria a hora seguinte e vazaria informação do futuro.
+        dados[list(SERIES)] = dados[list(SERIES)].ffill()
+        dados = dados.dropna(subset=list(SERIES))  # horas iniciais sem nenhum valor anterior
     if len(dados) < JANELA_HORAS + 24:
         raise ValueError(
             f"São necessárias pelo menos {JANELA_HORAS + 24} horas (24 de histórico + 72 avaliadas); "
             f"o arquivo tem {len(dados)}."
         )
-    return dados.astype(float)
+    return dados.astype({c: float for c in SERIES})
 
 
 # ---------------------------------------------------------------------- baselines
@@ -91,7 +96,7 @@ def criar_features(dados: pd.DataFrame, alvo: str) -> pd.DataFrame:
     # Calendário: o gerador do professor segue um padrão diário (picos ~10 h e ~15 h).
     feats["hora_do_dia"] = dados.index.hour
     feats["periodo_do_dia"] = feats["hora_do_dia"].map(periodo_do_dia)
-    feats["dia_da_semana"] = dados.index.dayofweek
+    # Sem "dia da semana": com 4 dias de coleta, cada dia apareceria uma única vez.
     # Memória recente e sazonalidade diária (lag 24 h compara a mesma hora de ontem).
     for k in (1, 2, 3, 24):
         feats[f"lag_{k}h"] = y.shift(k)
@@ -109,13 +114,14 @@ def prever_random_forest(dados: pd.DataFrame, alvo: str, inicio_janela: int, ref
     """Walk-forward: para cada hora da janela, treina com as horas anteriores e prevê a hora."""
     feats = criar_features(dados, alvo)
     y = dados[alvo]
+    sem_dado = dados["sem_dado"]
     previsoes = pd.Series(np.nan, index=dados.index, name=NOME_RF)
     modelo = None
     for posicao in range(inicio_janela, len(dados)):
         if modelo is None or (posicao - inicio_janela) % refit_a_cada == 0:
             # A partir do scikit-learn 1.4, o Random Forest aceita NaN nas features
             # (horas iniciais sem lag 24 h), então não descartamos o começo do histórico.
-            treino = slice(1, posicao)
+            treino = [i for i in range(1, posicao) if not sem_dado.iloc[i]]  # alvo observado
             modelo = RandomForestRegressor(
                 n_estimators=300, min_samples_leaf=2, random_state=semente, n_jobs=-1
             ).fit(feats.iloc[treino], y.iloc[treino])
@@ -125,14 +131,17 @@ def prever_random_forest(dados: pd.DataFrame, alvo: str, inicio_janela: int, ref
 
 
 # ------------------------------------------------------------------------ métricas
-def avaliar_particoes(real: pd.Series, previsoes: pd.DataFrame, inicio_janela: int) -> pd.DataFrame:
-    """MAE e MSE de cada modelo em cada partição cumulativa da janela de 72 h."""
+def avaliar_particoes(real: pd.Series, previsoes: pd.DataFrame, inicio_janela: int,
+                      sem_dado: pd.Series | None = None) -> pd.DataFrame:
+    """MAE e MSE de cada modelo em cada partição cumulativa da janela de 72 h (só horas observadas)."""
     linhas = []
+    observada = ~sem_dado if sem_dado is not None else pd.Series(True, index=real.index)
     for nome_particao, horas in PARTICOES.items():
         fatia = slice(inicio_janela, inicio_janela + horas)
-        y = real.iloc[fatia]
+        manter = observada.iloc[fatia].to_numpy()
+        y = real.iloc[fatia][manter]
         for modelo in previsoes.columns:
-            p = previsoes[modelo].iloc[fatia]
+            p = previsoes[modelo].iloc[fatia][manter]
             linhas.append({
                 "particao": nome_particao,
                 "modelo": modelo,
@@ -250,7 +259,7 @@ def main() -> None:
         previsoes[NOME_RF], importancias = prever_random_forest(
             dados, serie, inicio_janela, args.refit_a_cada, args.semente
         )
-        tabela = avaliar_particoes(dados[serie], previsoes, inicio_janela)
+        tabela = avaliar_particoes(dados[serie], previsoes, inicio_janela, dados["sem_dado"])
         tabela.insert(0, "serie", serie)
         todas.append(tabela)
 
