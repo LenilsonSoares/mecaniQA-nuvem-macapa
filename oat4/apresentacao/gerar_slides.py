@@ -360,23 +360,20 @@ def definir_paragrafo(p, texto):
 
 
 def slide_contexto(s):
-    titulo(s, "Problema e objetivo do MVP")
-    problemas = [
-        ("Picos de tráfego", "Horário comercial concentra as requisições das oficinas e causa lentidão."),
-        ("Surtos de falhas", "Erros 4xx e 5xx aparecem em rajadas e derrubam o atendimento."),
-        ("Recursos ociosos", "De madrugada a infraestrutura fica superdimensionada e gera custo."),
-    ]
-    for i, (t, c) in enumerate(problemas):
-        cartao(s, 0.45, 1.3 + i * 1.07, 4.6, 0.95, t, c, tam_corpo=10)
-    cartao(s, 5.3, 1.3, 4.25, 3.09, "Objetivo do MVP — Fase 4",
-           ["Monitorar a API em tempo real com Prometheus e Grafana.",
-            "Prever, para a próxima hora, quantas requisições terão sucesso e quantas terão erro.",
-            "Com a previsão, escalar a infraestrutura antes do pico e reagir a falhas mais cedo."],
-           fundo=VERDE_CLARO, cor_titulo=VERDE, tam_corpo=11)
+    titulo(s, "O problema da MecâniQA")
+    problemas = [("Picos", "lentidão no horário comercial"), ("Falhas", "rajadas de erros 4xx e 5xx"),
+                 ("Ociosidade", "máquina sobrando de madrugada")]
+    for i, (palavra, frase) in enumerate(problemas):
+        x = 0.45 + i * 3.08
+        cartao(s, x, 1.3, 2.9, 1.45, palavra, [frase], tam_titulo=24, tam_corpo=12)
+    cartao(s, 0.45, 3.0, 9.1, 1.45, "Objetivo do MVP — Fase 4",
+           ["Ver a API em tempo real e prever a próxima hora de sucessos e erros → escalar antes do pico."],
+           fundo=VERDE_CLARO, cor_titulo=VERDE, tam_titulo=16, tam_corpo=14)
     fonte(s, "Fonte: enunciado da OAT 4 — Programa de Trainee MecâniQA 2026.2")
-    notas(s, "Apresentador 1 (45 s): A MecâniQA passou a receber requisições das oficinas o dia todo. "
-             "Isso trouxe picos de tráfego, surtos de erro e desperdício de máquina de madrugada. "
-             "O MVP desta fase observa a API em tempo real e prevê sucesso e erro por hora, para agir antes do problema.")
+    notas(s, "Apresentador 1 (45 s): A MecâniQA passou a receber requisições das oficinas o dia todo. Isso trouxe "
+             "três problemas: picos de tráfego que deixam a API lenta no horário comercial, rajadas de erros 4xx e "
+             "5xx, e máquina sobrando de madrugada. O MVP desta fase observa a API em tempo real e prevê sucessos e "
+             "erros da próxima hora, para escalar antes do pico.")
 
 
 def slide_arquitetura(s):
@@ -407,40 +404,34 @@ def slide_arquitetura(s):
 
 def slide_ambiente(s):
     titulo(s, "Ambiente em funcionamento")
-    tabela(s, 0.45, 1.3, 4.3, [["Serviço", "Porta", "Função"],
-                                ["api", "8000", "API + /metrics"],
-                                ["prometheus", "9090", "scrape 5 s"],
-                                ["grafana", "3000", "dashboards"],
-                                ["gerador", "—", "tráfego 24 h"]], [1.3, 0.8, 2.2], tamanho=10)
-    caixa(s, 0.45, 2.95, 4.3, 1.4, ["Como conferimos:", "docker compose ps → 4 serviços Up",
-                                    "Prometheus › Targets → mecaniqa-django-api UP",
-                                    "Grafana › pasta MecaniQA → 2 dashboards"], tamanho=10, negrito_primeira=True)
-    imagem_ou_espaco(s, PRINTS / "ambiente.png", 5.0, 1.3, 4.55, 3.2,
-                     "print: docker compose ps + Prometheus Targets (UP)  →  prints/ambiente.png")
+    imagem_ou_espaco(s, PRINTS / "ambiente_docker.png", 0.45, 1.25, 4.45, 3.0,
+                     "print do terminal: docker compose ps (4 serviços Up)  →  prints/ambiente_docker.png")
+    imagem_ou_espaco(s, PRINTS / "ambiente_targets.png", 5.1, 1.25, 4.45, 3.0,
+                     "print do Prometheus › Status › Targets (API UP)  →  prints/ambiente_targets.png")
+    caixa(s, 0.45, 4.3, 4.45, 0.35, "docker compose ps — api, prometheus, grafana e gerador Up", tamanho=10,
+          cor=VERDE, negrito_primeira=True, alinhar=PP_ALIGN.CENTER)
+    caixa(s, 5.1, 4.3, 4.45, 0.35, "Prometheus raspando a API a cada 5 s — alvo UP", tamanho=10,
+          cor=VERDE, negrito_primeira=True, alinhar=PP_ALIGN.CENTER)
     fonte(s, "Fonte: docker compose ps · http://localhost:9090/targets")
-    notas(s, "Apresentador 2 (40 s): Subimos a pilha com docker compose. Os quatro serviços ficam ativos e o "
-             "Prometheus mostra o alvo da API como UP, ou seja, a raspagem das métricas está acontecendo.")
+    notas(s, "Apresentador 2 (40 s): Subimos a pilha com docker compose: API, Prometheus, Grafana e o gerador de "
+             "tráfego, os quatro ativos. No Prometheus, o alvo da API aparece como UP, ou seja, as métricas estão "
+             "sendo raspadas a cada 5 segundos.")
 
 
 def slide_dashboard(s, tipo):
     sucesso = tipo == "sucesso"
     titulo(s, f"Dashboard {'1 — sucesso (2xx)' if sucesso else '2 — erro (4xx/5xx)'}")
-    imagem_ou_espaco(s, PRINTS / f"dashboard_{tipo}.png", 0.45, 1.3, 6.1, 3.3,
-                     f"print do dashboard com data e hora visíveis  →  prints/dashboard_{tipo}.png")
+    imagem_ou_espaco(s, PRINTS / f"dashboard_{tipo}.png", 0.45, 1.2, 9.1, 3.15,
+                     f"print do dashboard em tela cheia, últimos 3 dias, com data e hora  →  prints/dashboard_{tipo}.png")
     metrica = "success" if sucesso else "error"
-    paineis = (["Sucessos na última hora e em 24 h", "Taxa de sucesso (%)", "Sucessos por hora (barras)",
-                "Sucessos por minuto em tempo real", "Por código: 200, 201, 202"] if sucesso else
-               ["Erros na última hora e em 24 h", "Taxa de erro (%)", "Erros por hora (barras)",
-                "4xx × 5xx por minuto", "Taxa de erro ao longo do tempo"])
-    caixa(s, 6.75, 1.3, 2.85, 2.2, ["7 painéis:", *paineis], tamanho=10, negrito_primeira=True)
-    cartao(s, 6.75, 3.55, 2.85, 1.05, "PromQL (série horária)",
-           [f"sum(increase(mecaniqa_api_requests_{metrica}_total[1h]))"], fundo=ESCURO, cor_titulo=BRANCO,
-           cor_corpo=BRANCO, tam_titulo=10, tam_corpo=8)
-    fonte(s, f"Fonte: Grafana › MecaniQA › Requisições com {'Sucesso' if sucesso else 'Erro'} "
-             f"(oat4/app-monitoring/grafana/provisioning/dashboards)")
-    notas(s, f"Apresentador 2 (40 s): Este é o dashboard de {'sucesso' if sucesso else 'erro'}. "
-             + ("Ele mostra o volume de requisições atendidas, com o padrão diário: picos perto das 10 h e das 15 h."
-                if sucesso else "Ele separa erros do cliente (4xx) de falhas internas (5xx) e evidencia os surtos de falha."))
+    caixa(s, 0.45, 4.36, 9.1, 0.32, f"PromQL: sum(increase(mecaniqa_api_requests_{metrica}_total[1h]))",
+          tamanho=10, cor=VERDE, negrito_primeira=True, alinhar=PP_ALIGN.CENTER)
+    fonte(s, f"Fonte: Grafana › MecaniQA › Requisições com {'Sucesso' if sucesso else 'Erro'} · 7 painéis provisionados")
+    notas(s, f"Apresentador 2 (40 s): Este é o dashboard de {'sucesso' if sucesso else 'erro'}, com os últimos 3 dias. "
+             + ("Os painéis mostram o volume por hora, a taxa de sucesso e o ritmo em tempo real; dá para ver o ciclo "
+                "diário, com picos perto das 10 h e das 15 h e vale de madrugada."
+                if sucesso else "Os painéis separam erros do cliente (4xx) de falhas internas (5xx) e mostram a taxa "
+                "de erro ao longo do tempo; os surtos de falha aparecem como picos."))
 
 
 def slide_coleta(s, r):
@@ -477,8 +468,7 @@ def slide_baselines(s):
                                 ["Média móvel 24 h", "média das 24 horas anteriores"]], [2.0, 3.6], tamanho=10,
            destaque_linha=4)
     cartao(s, 6.35, 1.3, 3.2, 2.4, "Por que o lag de 24 h importa",
-           ["O tráfego segue um ciclo diário: picos perto das 10 h e 15 h e vale de madrugada.",
-            "Repetir a mesma hora de ontem captura esse ciclo sem treino nenhum."],
+           ["Mesma hora de ontem = ciclo diário (picos ~10 h e 15 h) sem treino nenhum."],
            fundo=VERDE_CLARO, cor_titulo=VERDE, tam_corpo=10)
     destaque(s, 0.45, 3.85, 9.1, "Todas as previsões usam apenas horas anteriores (shift antes do rolling)", 12)
     fonte(s, "Fonte: analise/analise_oat4.py · prever_baselines()")
@@ -540,61 +530,53 @@ def slide_resultado(s, r, serie):
 
 def slide_features(s):
     titulo(s, "Feature engineering")
-    grupos = [("Calendário", ["hora do dia", "período do dia", "dia da semana"], "o tráfego segue o relógio"),
-              ("Memória", ["lags de 1, 2, 3 e 24 h"], "inércia recente e ciclo diário"),
-              ("Janelas", ["médias e desvios móveis", "de 3, 6, 12 e 24 h"], "nível e volatilidade"),
-              ("Tendência", ["variação hora a hora", "outra série 1 h antes"], "subida/queda e efeito cruzado")]
-    for i, (t, itens, porque) in enumerate(grupos):
-        cartao(s, 0.45 + i * 2.3, 1.3, 2.15, 1.85, t, [*itens, f"→ {porque}"], tam_titulo=12, tam_corpo=10)
-    imagem_ou_espaco(s, RESULTADOS / "05_importancia_features_sucesso.png", 0.45, 3.25, 5.0, 1.4,
+    grupos = [("Calendário", "hora · período · dia"), ("Memória", "lags 1, 2, 3 e 24 h"),
+              ("Janelas", "média e desvio 3–24 h"), ("Tendência", "variação · outra série")]
+    for i, (t_grupo, itens) in enumerate(grupos):
+        cartao(s, 0.45 + i * 2.3, 1.2, 2.15, 0.95, t_grupo, [itens], tam_titulo=13, tam_corpo=10)
+    imagem_ou_espaco(s, RESULTADOS / "05_importancia_features_sucesso.png", 0.45, 2.3, 9.1, 2.35,
                      "importância das features  →  resultados/05_importancia_features_sucesso.png")
-    destaque(s, 5.65, 3.35, 3.9, "Tudo calculado com shift: nenhuma feature enxerga a hora prevista", 11)
-    fonte(s, "Fonte: analise/analise_oat4.py · criar_features()")
-    notas(s, "Apresentador 4 (50 s): Transformamos a série em colunas que o modelo entende. Calendário, porque o "
-             "tráfego depende da hora; memória, com os lags; janelas, com média e desvio; e tendência. Todas usam só "
-             "o passado. O gráfico mostra quais features o Random Forest mais usou.")
+    fonte(s, "Todas as features usam só horas anteriores (shift) · Fonte: analise/analise_oat4.py · criar_features()")
+    notas(s, "Apresentador 4 (50 s): Transformamos a série em colunas que o modelo entende: calendário, porque o "
+             "tráfego depende da hora; memória, com os lags; janelas, com média e desvio; e tendência, com a variação "
+             "hora a hora e a outra série. Todas usam só o passado. O gráfico mostra quais o Random Forest mais usou.")
 
 
 def slide_modelo(s, r):
     titulo(s, "Random Forest × baselines")
-    cartao(s, 0.45, 1.3, 3.0, 3.25, "Avaliação walk-forward",
-           ["Para cada hora da janela, o modelo treina só com as horas anteriores e prevê a hora seguinte.",
-            "300 árvores · scikit-learn", "Mesmas partições e métricas dos baselines."],
-           fundo=VERDE_CLARO, cor_titulo=VERDE, tam_corpo=10)
-    imagem_ou_espaco(s, RESULTADOS / "03_previsoes_sucesso.png", 3.65, 1.3, 5.9, 1.6,
+    imagem_ou_espaco(s, RESULTADOS / "03_previsoes_sucesso.png", 0.45, 1.2, 9.1, 1.7,
                      "real × melhor baseline × RF  →  resultados/03_previsoes_sucesso.png")
-    imagem_ou_espaco(s, RESULTADOS / "04_evolucao_mae_sucesso.png", 3.65, 2.98, 5.9, 1.6,
-                     "evolução do MAE  →  resultados/04_evolucao_mae_sucesso.png")
-    fonte(s, "Gráficos da série de erro: resultados/03_previsoes_erro.png e 04_evolucao_mae_erro.png")
-    notas(s, "Apresentador 5 (60 s): O Random Forest foi avaliado em walk-forward: nunca vê o futuro. O primeiro "
-             "gráfico compara o real com o melhor baseline e o modelo; o segundo mostra o MAE caindo conforme o "
-             "histórico cresce — com pouco histórico o modelo ainda não aprendeu o ciclo diário.")
+    imagem_ou_espaco(s, RESULTADOS / "04_evolucao_mae_sucesso.png", 0.45, 2.98, 9.1, 1.7,
+                     "evolução do MAE por partição  →  resultados/04_evolucao_mae_sucesso.png")
+    fonte(s, "Walk-forward: a cada hora o RF (300 árvores) treina só com o passado e prevê a próxima · "
+             "série de erro em resultados/03_previsoes_erro.png e 04_evolucao_mae_erro.png")
+    notas(s, "Apresentador 5 (60 s): O Random Forest foi avaliado em walk-forward: a cada hora ele treina só com o "
+             "passado e prevê a hora seguinte, sem ver o futuro. O primeiro gráfico compara o real com o melhor "
+             "baseline e o modelo; o segundo mostra o MAE de cada modelo conforme o histórico cresce.")
 
 
 def slide_conclusao(s, r):
     titulo(s, "Considerações finais")
-    if r["tem_metricas"]:
-        su, er = r["sucesso"], r["erro"]
-        achados = [f"Sucesso: melhor baseline {su['melhor_baseline']} (MAE {num(su['mae_baseline'])}); "
-                   f"RF {num(su['mae_rf'])}.",
-                   f"Erro: melhor baseline {er['melhor_baseline']} (MAE {num(er['mae_baseline'])}); RF {num(er['mae_rf'])}.",
-                   "Features mais importantes do RF (sucesso): "
-                   + (" e ".join(su.get("top_features", [])) or "ver gráfico de importância") + "."]
-    else:
-        achados = ["Sucesso: melhor baseline [modelo] (MAE [x]); RF [y].",
-                   "Erro: melhor baseline [modelo] (MAE [x]); RF [y].",
-                   "Features mais importantes do RF (sucesso): [feature 1] e [feature 2]."]
-    cartao(s, 0.45, 1.3, 4.45, 2.15, "O que aprendemos", achados, fundo=VERDE_CLARO, cor_titulo=VERDE, tam_corpo=10)
-    cartao(s, 5.1, 1.3, 4.45, 2.15, "Limites e próximos passos",
-           ["Só 3 dias: cada hora do dia aparece poucas vezes para o modelo aprender.",
-            "Erros têm surtos aleatórios: o MSE castiga esses picos.",
-            "Próximo passo: alertas no Grafana guiados pela previsão e mais dias de coleta."],
-           tam_corpo=10)
-    destaque(s, 0.45, 3.65, 9.1, "Observabilidade + previsão: a MecâniQA pode escalar antes do pico, não depois", 13)
-    fonte(s, "Fonte: resultados/metricas_todas.csv")
-    notas(s, "Apresentador 5 (45 s): Fechamos com o que os números mostraram, sem exagero: qual baseline foi melhor, "
-             "se o Random Forest superou ou não, e por quê. Depois os limites — poucos dias de dados — e o próximo "
-             "passo. Obrigado, professor; ficamos à disposição para perguntas.")
+    tem = r["tem_metricas"]
+    for i, serie in enumerate(("sucesso", "erro")):
+        info = r.get(serie, {})
+        y = 1.2 + i * 1.12
+        caixa(s, 0.45, y + 0.25, 1.4, 0.5, serie.capitalize(), tamanho=16, negrito_primeira=True)
+        blocos = [(f"MAE {num(info['mae_baseline'])}" if tem else "MAE [x]",
+                   f"melhor baseline: {info['melhor_baseline']}" if tem else "melhor baseline: [modelo]", VERDE),
+                  (f"MAE {num(info['mae_rf'])}" if tem else "MAE [y]", "Random Forest", PRETO)]
+        for j, (valor, rotulo, cor) in enumerate(blocos):
+            x = 2.0 + j * 3.8
+            caixa(s, x, y, 3.6, 0.55, valor, tamanho=26, cor=cor, negrito_primeira=True)
+            caixa(s, x, y + 0.6, 3.6, 0.35, rotulo, tamanho=11, cor=CINZA_TEXTO)
+    destaque(s, 0.45, 3.5, 9.1, "Observabilidade + previsão: escalar antes do pico, não depois", 15)
+    caixa(s, 0.45, 4.0, 9.1, 0.6, "Próximos passos: mais dias de coleta e alertas no Grafana guiados pela previsão",
+          tamanho=12)
+    fonte(s, "MAE na partição P4 (72 h), em requisições por hora · Fonte: resultados/metricas_todas.csv")
+    notas(s, "Apresentador 5 (45 s): Em sucesso e em erro, comparem o melhor baseline com o Random Forest e digam, "
+             "sem exagero, se o modelo superou ou não e por quê. Limite principal: só 3 dias, então cada hora do dia "
+             "aparece poucas vezes para o modelo aprender. Próximo passo: mais dias de coleta e alertas guiados pela "
+             "previsão. Obrigado, professor; ficamos à disposição para perguntas.")
 
 
 def slide_referencias(s):
