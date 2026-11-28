@@ -3,12 +3,11 @@
 Gera em apresentacao/prints/ (os nomes que o gerador de slides espera):
     ambiente_docker.png       terminal com `docker compose ps` (os 4 serviços)
     ambiente_targets.png      Prometheus › Targets com a API em UP
-    dashboard_sucesso.png     Grafana, dashboard de sucesso, período da coleta
-    dashboard_erro.png        Grafana, dashboard de erro, período da coleta
-    coleta_grafana_3dias.png  painéis "por hora" de sucesso e erro, um sobre o outro
+    painel_sucesso_5.png ...  Grafana, um painel por arquivo (5, 6 e 7 de cada dashboard),
+    painel_erro_5.png ...     no período da coleta: cada um vira um slide
     analise_terminal.png      (com --analise) execução real de analise/analise_oat4.py
 
-Os dashboards são capturados em modo quiosque (sem menus do Grafana), com escala 2x
+Os painéis são capturados sozinhos (d-solo, sem menus do Grafana), com escala 2x
 (nítido no projetor) e uma faixa de legenda com o período e a hora da captura.
 
 Uso (na pasta oat4, com a pilha rodando):
@@ -37,7 +36,14 @@ GRAFANA = "http://localhost:3000"
 PROMETHEUS = "http://localhost:9090"
 CREDENCIAIS = base64.b64encode(b"admin:admin").decode()
 DASHBOARDS = {"sucesso": "mecaniqa-oat4-sucesso", "erro": "mecaniqa-oat4-erro"}
-PAINEL_POR_HORA = 5  # id do painel "Requisições ... por hora" nos dois dashboards
+# Painéis que viram slide (id → título no Grafana). Os 4 indicadores do topo ficam de fora:
+# mostram só o valor de "agora", e o período da coleta aparece melhor nos gráficos.
+PAINEIS = {
+    "sucesso": {5: "Requisições com sucesso por hora", 6: "Sucessos por minuto (tempo real)",
+                7: "Sucessos por código de status"},
+    "erro": {5: "Requisições com erro por hora", 6: "Erros por classe (4xx x 5xx) por minuto",
+             7: "Taxa de erro (%) ao longo do tempo"},
+}
 ESCALA = 2
 
 FONTES = Path("C:/Windows/Fonts")
@@ -217,34 +223,15 @@ def main():
         capturar(pagina, f"{PROMETHEUS}/targets", alvo, 1500, 300, espera_ms=2500)
         legenda(alvo, f"Prometheus > Status > Targets  |  {capturado}", "light")
 
+        # Um print por painel: cada painel vai sozinho num slide, grande o bastante para ler.
         for nome, uid in DASHBOARDS.items():
-            arquivo = SAIDA / f"dashboard_{nome}.png"
-            url = f"{GRAFANA}/d/{uid}?orgId=1&from={de}&to={ate}&theme={args.tema}&kiosk"
-            # Formato largo para ocupar a largura inteira do slide; a altura sobra e o pé vazio é recortado.
-            capturar(pagina, url, arquivo, 2300, 1100, aparar=True)
-            legenda(arquivo, f"Grafana > MecâniQA > Requisições com {'Sucesso (2xx)' if nome == 'sucesso' else 'Erro (4xx/5xx)'}"
-                             f"  |  {periodo}  |  {capturado}", args.tema)
-
-        # Coleta: os dois painéis "por hora", empilhados numa imagem só.
-        partes = []
-        for nome, uid in DASHBOARDS.items():
-            parte = SAIDA / f"_painel_{nome}.png"
-            url = f"{GRAFANA}/d-solo/{uid}?orgId=1&panelId={PAINEL_POR_HORA}&from={de}&to={ate}&theme={args.tema}"
-            capturar(pagina, url, parte, 2400, 330)  # dois empilhados ≈ 3,5:1, a área do slide de coleta
-            partes.append(Image.open(parte).convert("RGB"))
+            for painel, titulo_painel in PAINEIS[nome].items():
+                arquivo = SAIDA / f"painel_{nome}_{painel}.png"
+                url = f"{GRAFANA}/d-solo/{uid}?orgId=1&panelId={painel}&from={de}&to={ate}&theme={args.tema}"
+                capturar(pagina, url, arquivo, 2000, 760)  # ≈ 2,6:1, a área de imagem do slide
+                legenda(arquivo, f"Grafana > {titulo_painel}  |  {periodo}  |  {capturado}", args.tema)
         navegador.close()
 
-    coleta = SAIDA / "coleta_grafana_3dias.png"
-    junta = Image.new("RGB", (partes[0].width, sum(i.height for i in partes)), (255, 255, 255))
-    y = 0
-    for parte in partes:
-        junta.paste(parte, (0, y))
-        y += parte.height
-    junta.save(coleta)
-    for temporario in SAIDA.glob("_painel_*.png"):
-        temporario.unlink()
-    legenda(coleta, f"Grafana > MecâniQA > sucesso e erro por hora  |  {periodo}  |  {capturado}", args.tema)
-    print("  ✓", coleta.name)
     print(f"Prints salvos em {SAIDA}. Rode apresentacao/gerar_slides.py --pdf para colocá-los nos slides.")
 
 

@@ -5,25 +5,28 @@ automaticamente, em alta resolução (2x) e sempre no mesmo padrão, por:
 
 ```powershell
 cd oat4
-py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # início das 72 h avaliadas
+py apresentacao/capturar_prints.py --inicio "2026-11-27 17:00"   # 1ª hora cheia da coleta
 py coleta/coletar_prometheus.py                                  # exporta a série horária
 py apresentacao/capturar_prints.py --analise                     # roda a análise + print do terminal
 py apresentacao/gerar_slides.py --pdf                            # coloca os prints nos slides
 ```
 
-Rode **no fim da coleta, com a pilha ainda no ar** (`docker compose ps` com os 4 serviços Up).
+Rode **depois de 01/12 17:00 (fim da coleta), com a pilha ainda no ar** (`docker compose ps` com os 4 serviços Up).
 Opções: `--fim "AAAA-MM-DD HH:MM"` (padrão: agora) e `--tema dark` (padrão: claro).
 
 | Arquivo | Slide | Conteúdo |
 | --- | --- | --- |
 | `ambiente_docker.png` | Ambiente | janela real do Windows PowerShell com `docker compose ps` (4 serviços **Up**) e `Get-Date` |
 | `ambiente_targets.png` | Ambiente | Prometheus › Targets com `mecaniqa-django-api` **UP** |
-| `dashboard_sucesso.png` | Dashboard 1 | Grafana › *Requisições com Sucesso*, período da coleta, modo quiosque |
-| `dashboard_erro.png` | Dashboard 2 | Grafana › *Requisições com Erro*, período da coleta, modo quiosque |
-| `coleta_grafana_3dias.png` | Coleta | painéis "por hora" de sucesso e erro empilhados, período inteiro |
+| `painel_sucesso_5.png` | Dashboard sucesso: por hora | painel *Requisições com sucesso por hora* (a série dos modelos) |
+| `painel_sucesso_6.png` | Dashboard sucesso: por minuto | painel *Sucessos por minuto (tempo real)* |
+| `painel_sucesso_7.png` | Dashboard sucesso: por status | painel *Sucessos por código de status* |
+| `painel_erro_5.png` | Dashboard erro: por hora | painel *Requisições com erro por hora* (a série dos modelos) |
+| `painel_erro_6.png` | Dashboard erro: 4xx × 5xx | painel *Erros por classe (4xx x 5xx) por minuto* |
+| `painel_erro_7.png` | Dashboard erro: taxa de erro | painel *Taxa de erro (%) ao longo do tempo* |
 | `analise_terminal.png` | Análise executada | janela real do Windows PowerShell rodando `analise/analise_oat4.py` (ranking P4) e `Get-Date` |
 
-Os dois terminais são janelas de verdade do Windows PowerShell, abertas e fotografadas por
+Cada painel do Grafana é capturado sozinho (um por slide). Os dois terminais são janelas de verdade do Windows PowerShell, abertas e fotografadas por
 `apresentacao/janela_terminal.ps1` (fora do Windows, a saída real é desenhada). Cada print do
 Grafana e do Prometheus leva uma faixa de legenda embaixo com a tela, o período
 e a hora da captura. Também dá para salvar prints manuais aqui com esses mesmos nomes
